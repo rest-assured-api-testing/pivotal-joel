@@ -6,15 +6,15 @@ import entities.Project;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import static configuration.FilePath.dotenv;
 
 public class Projects {
     ApiRequest apiRequest = new ApiRequest();
 
-
     public void createBasicRequest() {
         apiRequest = new ApiRequest();
-        apiRequest.addHeader("X-TrackerToken", "7a6b2ec9fe77808a9d9286d18bd91e95");
-        apiRequest.setBaseUri("https://www.pivotaltracker.com/services/v5");
+        apiRequest.addHeader("X-TrackerToken", dotenv.get("TOKEN"));
+        apiRequest.setBaseUri(dotenv.get("BASE_URL"));
     }
 
     @BeforeMethod(onlyForGroups = "getProjects")
