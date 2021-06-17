@@ -17,11 +17,11 @@ public class ApiManager {
                 .contentType(ContentType.JSON)
                 .log().all();
     }
-    public static Response execute(ApiRequest apiRequest){
+    public static ApiResponse execute(ApiRequest apiRequest){
         Response response = buildRequest(apiRequest)
                 .request(apiRequest.getMethod().name()
                         ,apiRequest.getEndpoint());
 
-        return response;
+        return new ApiResponse(response);
     }
 }
