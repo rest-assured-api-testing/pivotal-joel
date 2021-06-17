@@ -30,6 +30,12 @@ public class ProjectsTest {
         apiRequestBuilder.method(ApiMethod.POST);
     }
 
+    @BeforeMethod(onlyForGroups = "putRequest")
+    public void addPutTypeToRequest() {
+        createBasicRequest();
+        apiRequestBuilder.method(ApiMethod.PUT);
+    }
+
     @BeforeMethod(onlyForGroups = "deleteRequest")
     public void addDeleteTypeToRequest() {
         createBasicRequest();
@@ -81,6 +87,21 @@ public class ProjectsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), 200);
         Assert.assertEquals(project.getKind(), "project");
         apiResponse.validateBodySchema("schemas/project.json");
+    }
+
+    @Test(groups = "putRequest")
+    public void updateAProjectTest() throws JsonProcessingException {
+        Project projectToSend = new Project();
+        projectToSend.setName("Project 6");
+        apiRequestBuilder.endpoint("/projects/{projectId}")
+                .body(new ObjectMapper().writeValueAsString(projectToSend))
+                .pathParam("projectId", "2505059");
+
+        ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
+        Project project = apiResponse.getBody(Project.class);
+
+        Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(project.getName(), "Project 6");
     }
 
     @Test(groups = "deleteRequest")

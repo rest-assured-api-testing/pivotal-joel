@@ -1,4 +1,5 @@
 import api.*;
+import entities.Account;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -36,7 +37,12 @@ public class AccountsTest {
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 
+        Account account = apiResponse.getBody(Account.class);
+
         Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(account.getKind(), "account");
+        apiResponse.validateBodySchema("schemas/account.json");
+
     }
 
     @Test(groups = "getRequest")
