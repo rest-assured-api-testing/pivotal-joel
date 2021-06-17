@@ -1,22 +1,37 @@
 package entities;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.ArrayList;
 
 public class Story {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String kind;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long project_id;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String name;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String description;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String story_type;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String current_state;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private float estimate;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private float requested_by_id;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private float owned_by_id;
     ArrayList <Integer> owner_ids = new ArrayList();
     ArrayList <String> labels = new ArrayList();
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String created_at;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String updated_at;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String url;
 
     public String getKind() {
