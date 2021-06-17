@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "kind": {
+      "type": "string"
+    },
+    "id": {
+      "type": "integer"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "updated_at": {
+      "type": "string"
+    },
+    "person": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "initials": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "id",
+        "name",
+        "email",
+        "initials",
+        "username"
+      ]
+    },
+    "project_id": {
+      "type": "integer"
+    },
+    "role": {
+      "type": "string"
+    },
+    "project_color": {
+      "type": "string"
+    },
+    "favorite": {
+      "type": "boolean"
+    },
+    "last_viewed_at": {
+      "type": "string"
+    },
+    "wants_comment_notification_emails": {
+      "type": "boolean"
+    },
+    "will_receive_mention_notifications_or_emails": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "kind",
+    "id",
+    "created_at",
+    "updated_at",
+    "person",
+    "project_id",
+    "role",
+    "project_color",
+    "favorite",
+    "last_viewed_at",
+    "wants_comment_notification_emails",
+    "will_receive_mention_notifications_or_emails"
+  ]
+}
