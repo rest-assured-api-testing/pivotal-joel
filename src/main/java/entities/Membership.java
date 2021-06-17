@@ -1,17 +1,31 @@
 package entities;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 public class Membership {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String kind;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String created_at;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String updated_at;
-    Person PersonObject;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    Person person;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long project_id;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String role;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String project_color;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private boolean favorite;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String last_viewed_at;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private boolean wants_comment_notification_emails;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private boolean will_receive_mention_notifications_or_emails;
 
     public String getKind() {
@@ -46,12 +60,12 @@ public class Membership {
         this.updated_at = updated_at;
     }
 
-    public Person getPersonObject() {
-        return PersonObject;
+    public Person getPerson() {
+        return person;
     }
 
-    public void setPersonObject(Person personObject) {
-        PersonObject = personObject;
+    public void setPerson(Person person) {
+        this.person = person;
     }
 
     public Long getProject_id() {

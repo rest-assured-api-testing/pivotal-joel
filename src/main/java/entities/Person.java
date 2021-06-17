@@ -1,11 +1,19 @@
 package entities;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 public class Person {
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String kind;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String name;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String email;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String initials;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String username;
 
     public String getKind() {
