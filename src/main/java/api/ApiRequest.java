@@ -87,45 +87,4 @@ public class ApiRequest {
     public Map<String, String> getPathParms() {
         return pathParms;
     }
-
-    public ApiRequest baseUri(String baseUri) {
-        setBaseUri(baseUri);
-        return this;
-    }
-
-    public ApiRequest endpoint(String endpoint) {
-        setEndpoint(endpoint);
-        return this;
-    }
-
-    public ApiRequest body(String body) {
-        setBody(body);
-        return this;
-    }
-
-    public ApiRequest token(String token) {
-        setToken(token);
-        return this;
-    }
-
-    public ApiRequest method(Enum<ApiMethod> method) {
-        setMethod(method);
-        return this;
-    }
-
-    public ApiRequest header(final String header, final String value) {
-        addHeader(header, value);
-        return this;
-    }
-
-    public ApiRequest queryParam(final String param, final String value) {
-        addQueryParam(param, value);
-        return this;
-    }
-
-    public ApiRequest pathParam(final String param, final String value) {
-        addPathParam(param, value);
-        return this;
-    }
-
 }
