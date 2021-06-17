@@ -1,34 +1,59 @@
 package entities;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Project {
-
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Long id;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String kind;
     private String name;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int version;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int iteration_length;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String week_start_day;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String point_scale;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean point_scale_is_custom;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean bugs_and_chores_are_estimatable;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean automatic_planning;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean enable_tasks;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private TimeZone time_zone;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int velocity_averaged_over;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int number_of_done_iterations_to_show;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean has_google_domain;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean enable_incoming_emails;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int initial_velocity;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean public_;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean atom_enabled;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String project_type;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String start_time;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String created_at;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String updated_at;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int account_id;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     private int current_iteration_number;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Boolean enable_following;
 
     public Long getId() {
