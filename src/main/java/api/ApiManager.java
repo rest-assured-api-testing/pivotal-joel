@@ -24,4 +24,13 @@ public class ApiManager {
 
         return new ApiResponse(response);
     }
+
+    public static ApiResponse executeWithBody(ApiRequest apiRequest){
+        Response response = buildRequest(apiRequest)
+                .body(apiRequest.getBody())
+                .request(apiRequest.getMethod().name()
+                        ,apiRequest.getEndpoint());
+
+        return new ApiResponse(response);
+    }
 }
