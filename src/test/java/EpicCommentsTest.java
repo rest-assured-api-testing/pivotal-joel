@@ -4,18 +4,18 @@ import api.ApiRequestBuilder;
 import api.ApiResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import entities.EpicComment;
-import entities.StoryComment;
+import entities.*;
+import managers.*;
+import org.apache.http.HttpStatus;
 import org.testng.Assert;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 import static configuration.EnvVariablesPool.dotenv;
 
 public class EpicCommentsTest {
     ApiRequestBuilder apiRequestBuilder;
+    Project createdProject;
+    Epic createdEpic;
     EpicComment createdEpicComment;
 
     public void createEpicComment() throws JsonProcessingException {
@@ -25,9 +25,9 @@ public class EpicCommentsTest {
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
                 .method(ApiMethod.POST)
-                .endpoint("/projects/{projectId}/epics/{epicId}/comments")
-                .pathParam("projectId", "2504465")
-                .pathParam("epicId", "4789536")
+                .endpoint(dotenv.get(Endpoints.EPIC_COMMENTS))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .pathParam("epicId", createdEpic.getId())
                 .body(new ObjectMapper().writeValueAsString(storyComment));
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder1.build());
         createdEpicComment = apiResponse.getBody(EpicComment.class);
@@ -38,12 +38,24 @@ public class EpicCommentsTest {
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
                 .method(ApiMethod.DELETE)
-                .endpoint("/projects/{projectId}/epics/{epicId}/comments/{commentId}")
-                .pathParam("projectId", "2504465")
-                .pathParam("epicId", "4789536")
+                .endpoint(dotenv.get(Endpoints.EPIC_COMMENT))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .pathParam("epicId", createdEpic.getId())
                 .pathParam("commentId", createdEpicComment.getId().toString());
 
         ApiManager.execute(apiRequestBuilder1.build());
+    }
+
+    @BeforeSuite
+    public void createRequirements() throws JsonProcessingException {
+        createdProject = ProjectManager.create();
+        createdEpic = EpicManager.createEpic(createdProject.getId().toString());
+    }
+
+    @AfterSuite
+    public void deleteRequirements() throws JsonProcessingException {
+        ProjectManager.delete(createdProject.getId().toString());
+        EpicManager.deleteEpic(createdProject.getId().toString(), createdEpic.getId().toString());
     }
 
     @BeforeTest
@@ -60,7 +72,7 @@ public class EpicCommentsTest {
         createEpicComment();
     }
 
-    @BeforeMethod(onlyForGroups = "postRequest")
+    @BeforeMethod(onlyForGroups = {"postRequest", "postBadRequest"})
     public void addPostTypeToRequest() {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.POST);
@@ -80,27 +92,16 @@ public class EpicCommentsTest {
         createEpicComment();
     }
 
-    @AfterMethod(onlyForGroups = "getRequest")
+    @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest", "deleteBadRequest"})
     public void cleanCreatedOneByGetRequest() {
         deleteEpicComment();
     }
 
-    @AfterMethod(onlyForGroups = "postRequest")
-    public void cleanCreatedOneByPostRequest() {
-        deleteEpicComment();
-    }
-
-    @AfterMethod(onlyForGroups = "putRequest")
-    public void cleanCreatedOneByPutRequest() {
-        deleteEpicComment();
-    }
-
-
     @Test(groups = "getRequest")
     public void getAllCommentsOfAnEpicTest() {
-        apiRequestBuilder.endpoint("/projects/{projectId}/epics/{epicId}/comments")
-                .pathParam("projectId", "2504465")
-                .pathParam("epicId", "4789536");
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC_COMMENTS))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .pathParam(PathParam.EPIC_ID, createdEpic.getId());
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 
@@ -109,10 +110,10 @@ public class EpicCommentsTest {
 
     @Test(groups = "getRequest")
     public void getACommentOfAnEpicTest() {
-        apiRequestBuilder.endpoint("/projects/{projectId}/epics/{epicId}/comments/{commentId}")
-                .pathParam("projectId", "2504465")
-                .pathParam("epicId", "4789536")
-                .pathParam("commentId", createdEpicComment.getId().toString());
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC_COMMENT))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .pathParam(PathParam.EPIC_ID, createdEpic.getId())
+                .pathParam(PathParam.COMMENT_ID, createdEpicComment.getId().toString());
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
         apiResponse.getResponse().then().log().body();
@@ -126,9 +127,9 @@ public class EpicCommentsTest {
     public void createACommentOfAnEpicTest() throws JsonProcessingException {
         StoryComment storyComment = new StoryComment();
         storyComment.setText("Comment 4-P1");
-        apiRequestBuilder.endpoint("/projects/{projectId}/epics/{epicId}/comments")
-                .pathParam("projectId", "2504465")
-                .pathParam("epicId", "4789536")
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC_COMMENTS))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .pathParam(PathParam.EPIC_ID, createdEpic.getId())
                 .body(new ObjectMapper().writeValueAsString(storyComment));
 
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
@@ -142,10 +143,10 @@ public class EpicCommentsTest {
     public void updateACommentOfAnEpicTest() throws JsonProcessingException {
         StoryComment storyComment = new StoryComment();
         storyComment.setText("Comment 5-P1");
-        apiRequestBuilder.endpoint("/projects/{projectId}/epics/{epicId}/comments/{commentId}")
-                .pathParam("projectId", "2504465")
-                .pathParam("epicId", "4789536")
-                .pathParam("commentId", this.createdEpicComment.getId().toString())
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC_COMMENT))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .pathParam(PathParam.EPIC_ID, createdEpic.getId())
+                .pathParam(PathParam.COMMENT_ID, this.createdEpicComment.getId().toString())
                 .body(new ObjectMapper().writeValueAsString(storyComment));
 
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
@@ -157,13 +158,76 @@ public class EpicCommentsTest {
 
     @Test(groups = "deleteRequest")
     public void deleteACommentOfAnEpicTest() throws JsonProcessingException {
-        apiRequestBuilder.endpoint("/projects/{projectId}/epics/{epicId}/comments/{commentId}")
-                .pathParam("projectId", "2504465")
-                .pathParam("epicId", "4789536")
-                .pathParam("commentId", createdEpicComment.getId().toString());
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC_COMMENT))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .pathParam(PathParam.EPIC_ID, createdEpic.getId())
+                .pathParam(PathParam.COMMENT_ID, createdEpicComment.getId().toString());
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 
         Assert.assertEquals(apiResponse.getStatusCode(), 204);
+    }
+
+    @Test(groups = "getRequest")
+    public void DoNotGetAllCommentsOfAnEpicTest() {
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC_COMMENTS))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .pathParam(PathParam.EPIC_ID, " ");
+
+        ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
+    }
+
+    @Test(groups = "getRequest")
+    public void DoNotGetACommentOfAnEpicTest() {
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC_COMMENT))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .pathParam(PathParam.EPIC_ID, createdEpic.getId())
+                .pathParam(PathParam.COMMENT_ID, " ");
+
+        ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
+    }
+
+    @Test(groups = "postBadRequest")
+    public void DoNotCreateACommentOfAnEpicTest2() throws JsonProcessingException {
+        StoryComment storyComment = new StoryComment();
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC_COMMENTS))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .pathParam(PathParam.EPIC_ID, createdEpic.getId())
+                .body(new ObjectMapper().writeValueAsString(storyComment));
+
+        ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+    }
+
+    @Test(groups = "putRequest")
+    public void DoNotUpdateACommentOfAnEpicTest() throws JsonProcessingException {
+        StoryComment storyComment = new StoryComment();
+        storyComment.setText("Comment 5-P1");
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC_COMMENT))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .pathParam(PathParam.EPIC_ID, createdEpic.getId())
+                .pathParam(PathParam.COMMENT_ID, "")
+                .body(new ObjectMapper().writeValueAsString(storyComment));
+
+        ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
+    }
+
+    @Test(groups = "deleteRequest")
+    public void DoNotDeleteACommentOfAnEpicTest() throws JsonProcessingException {
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC_COMMENT))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .pathParam(PathParam.EPIC_ID, createdEpic.getId())
+                .pathParam(PathParam.COMMENT_ID, "");
+
+        ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 }

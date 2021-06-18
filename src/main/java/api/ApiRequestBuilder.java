@@ -1,5 +1,8 @@
 package api;
 
+import managers.Param;
+import managers.Param2;
+
 public class ApiRequestBuilder implements IBuilder {
     ApiRequest apiRequest = new ApiRequest();
 
@@ -41,6 +44,10 @@ public class ApiRequestBuilder implements IBuilder {
     public ApiRequestBuilder pathParam(final String param, final String value) {
         apiRequest.addPathParam(param, value);
         return this;
+    }
+
+    public ApiRequestBuilder pathParam(String param, final Long value) {
+        return pathParam(param, value.toString());
     }
 
     @Override

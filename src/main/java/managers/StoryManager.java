@@ -10,8 +10,8 @@ import entities.Story;
 
 import static configuration.EnvVariablesPool.dotenv;
 
-public class SotryManager {
-    public Story createStory(String idProject) throws JsonProcessingException {
+public class StoryManager {
+    public static Story createStory(String idProject) throws JsonProcessingException {
         Story story = new Story();
         story.setName("Story 7-P1");
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
@@ -25,7 +25,7 @@ public class SotryManager {
         return apiResponse.getBody(Story.class);
     }
 
-    public void deleteStory(String idStory) {
+    public static void deleteStory(String idStory) {
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))

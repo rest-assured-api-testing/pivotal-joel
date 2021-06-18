@@ -28,7 +28,7 @@ public class ProjectsTest {
         createdProject = ProjectManager.create();
     }
 
-    @BeforeMethod(onlyForGroups = "postRequest")
+    @BeforeMethod(onlyForGroups = {"postRequest", "postBadRequest"})
     public void addPostTypeToRequest() {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.POST);
@@ -48,7 +48,7 @@ public class ProjectsTest {
         createdProject = ProjectManager.create();
     }
 
-    @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest"})
+    @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest", "deleteBadRequest"})
     public void cleanCreatedOneByGetRequest() {
         ProjectManager.delete(createdProject.getId().toString());
     }
@@ -66,7 +66,7 @@ public class ProjectsTest {
     @Test(groups = "getRequest")
     public void getAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECT"))
-                .pathParam(Param.PROJECT_ID.getName(), createdProject.getId().toString());
+                .pathParam(Param.PROJECT_ID.getText(), createdProject.getId().toString());
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
         Project project = apiResponse.getBody(Project.class);
@@ -113,7 +113,7 @@ public class ProjectsTest {
         projectToSend.setName(nameToUpdate);
         apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECT"))
                 .body(new ObjectMapper().writeValueAsString(projectToSend))
-                .pathParam(Param.PROJECT_ID.getName(), createdProject.getId().toString());
+                .pathParam(Param.PROJECT_ID.getText(), createdProject.getId().toString());
 
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
         Project project = apiResponse.getBody(Project.class);
@@ -123,13 +123,77 @@ public class ProjectsTest {
     }
 
     @Test(groups = "deleteRequest")
-    public void deleteAProject() {
+    public void deleteAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECT"))
-                .pathParam(Param.PROJECT_ID.getName(), createdProject.getId().toString());
+                .pathParam(Param.PROJECT_ID.getText(), createdProject.getId().toString());
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
 
+    }
+
+    @Test(groups = "getRequest")
+    public void doNotGetAllProjectTest() {
+        apiRequestBuilder.endpoint("/project");
+
+        ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
+    }
+
+    @Test(groups = "getRequest")
+    public void doNotGetAProjectWithBadUrlTest() {
+        apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECT"))
+                .pathParam(Param.PROJECT_ID.getText(), " ");
+
+        ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
+    }
+
+    @Test(groups = "getRequest")
+    public void doNotGetAProjectTest() {
+        apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECT"))
+                .pathParam(Param.PROJECT_ID.getText(), "1");
+
+        ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_FORBIDDEN);
+    }
+
+    @Test(groups = "postBadRequest")
+    public void doNotCreateAProjectTest() throws JsonProcessingException {
+        Project projectToSend = new Project();
+        apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECTS"))
+                .body(new ObjectMapper().writeValueAsString(projectToSend));
+
+        ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+    }
+
+    @Test(groups = "putRequest")
+    public void doNotUpdateAProjectTest() throws JsonProcessingException {
+        Project projectToSend = new Project();
+        String nameToUpdate = "Project 6";
+        projectToSend.setName(nameToUpdate);
+        apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECT"))
+                .body(new ObjectMapper().writeValueAsString(projectToSend))
+                .pathParam(Param.PROJECT_ID.getText(), "");
+
+        ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
+    }
+
+    @Test(groups = {"deleteRequest", "deleteBadRequest"})
+    public void doNotDeleteAProjectTest() {
+        apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECT"))
+                .pathParam(Param.PROJECT_ID.getText(), "");
+
+        ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 }
