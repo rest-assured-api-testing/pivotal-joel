@@ -18,7 +18,7 @@ public class EpicCommentsTest {
     ApiRequestBuilder apiRequestBuilder;
     EpicComment createdEpicComment;
 
-    public void createStory() throws JsonProcessingException {
+    public void createEpicComment() throws JsonProcessingException {
         StoryComment storyComment = new StoryComment();
         storyComment.setText("A comment 12-S7");
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
@@ -57,7 +57,7 @@ public class EpicCommentsTest {
     public void addGetTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.GET);
-        createStory();
+        createEpicComment();
     }
 
     @BeforeMethod(onlyForGroups = "postRequest")
@@ -70,14 +70,14 @@ public class EpicCommentsTest {
     public void addPutTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.PUT);
-        createStory();
+        createEpicComment();
     }
 
     @BeforeMethod(onlyForGroups = "deleteRequest")
     public void addDeleteTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.DELETE);
-        createStory();
+        createEpicComment();
     }
 
     @AfterMethod(onlyForGroups = "getRequest")

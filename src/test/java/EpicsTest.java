@@ -17,7 +17,7 @@ public class EpicsTest {
     ApiRequestBuilder apiRequestBuilder;
     Epic createdEpic;
 
-    public void createStory() throws JsonProcessingException {
+    public void createEpic() throws JsonProcessingException {
         Epic epic = new Epic();
         epic.setName("Epic 12-S7");
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
@@ -31,7 +31,7 @@ public class EpicsTest {
         createdEpic = apiResponse.getBody(Epic.class);
     }
 
-    public void deleteStory() {
+    public void deleteEpic() {
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
@@ -54,7 +54,7 @@ public class EpicsTest {
     public void addGetTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.GET);
-        createStory();
+        createEpic();
     }
 
     @BeforeMethod(onlyForGroups = "postRequest")
@@ -67,29 +67,29 @@ public class EpicsTest {
     public void addPutTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.PUT);
-        createStory();
+        createEpic();
     }
 
     @BeforeMethod(onlyForGroups = "deleteRequest")
     public void addDeleteTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.DELETE);
-        createStory();
+        createEpic();
     }
 
     @AfterMethod(onlyForGroups = "getRequest")
     public void cleanCreatedOneByGetRequest() {
-        deleteStory();
+        deleteEpic();
     }
 
     @AfterMethod(onlyForGroups = "postRequest")
     public void cleanCreatedOneByPostRequest() {
-        deleteStory();
+        deleteEpic();
     }
 
     @AfterMethod(onlyForGroups = "putRequest")
     public void cleanCreatedOneByPutRequest() {
-        deleteStory();
+        deleteEpic();
     }
 
 

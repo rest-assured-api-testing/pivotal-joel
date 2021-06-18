@@ -17,7 +17,7 @@ public class StoryTasksTest {
     ApiRequestBuilder apiRequestBuilder;
     StoryTask createdStoryTask;
 
-    public void createStory() throws JsonProcessingException {
+    public void createStoryTask() throws JsonProcessingException {
         StoryTask storyTask = new StoryTask();
         storyTask.setDescription("Task 1-S7");
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
@@ -32,7 +32,7 @@ public class StoryTasksTest {
         createdStoryTask = apiResponse.getBody(StoryTask.class);
     }
 
-    public void deleteStory() {
+    public void deleteStoryTask() {
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
@@ -56,7 +56,7 @@ public class StoryTasksTest {
     public void addGetTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.GET);
-        createStory();
+        createStoryTask();
     }
 
     @BeforeMethod(onlyForGroups = "postRequest")
@@ -69,29 +69,29 @@ public class StoryTasksTest {
     public void addPutTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.PUT);
-        createStory();
+        createStoryTask();
     }
 
     @BeforeMethod(onlyForGroups = "deleteRequest")
     public void addDeleteTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.DELETE);
-        createStory();
+        createStoryTask();
     }
 
     @AfterMethod(onlyForGroups = "getRequest")
     public void cleanCreatedOneByGetRequest() {
-        deleteStory();
+        deleteStoryTask();
     }
 
     @AfterMethod(onlyForGroups = "postRequest")
     public void cleanCreatedOneByPostRequest() {
-        deleteStory();
+        deleteStoryTask();
     }
 
     @AfterMethod(onlyForGroups = "putRequest")
     public void cleanCreatedOneByPutRequest() {
-        deleteStory();
+        deleteStoryTask();
     }
 
 

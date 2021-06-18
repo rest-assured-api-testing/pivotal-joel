@@ -5,8 +5,6 @@ import api.ApiResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import entities.Membership;
-import entities.Person;
-import entities.Project;
 import entities.ProjectMembership;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;

@@ -1,6 +1,7 @@
 import api.*;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import static configuration.EnvVariablesPool.dotenv;
@@ -8,6 +9,7 @@ import static configuration.EnvVariablesPool.dotenv;
 public class NotificationsTest {
     ApiRequestBuilder apiRequestBuilder;
 
+    @BeforeTest
     public void createBasicRequest() {
         apiRequestBuilder = new ApiRequestBuilder()
                 .header("X-TrackerToken", dotenv.get("TOKEN"))

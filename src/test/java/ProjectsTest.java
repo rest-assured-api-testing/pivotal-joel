@@ -2,16 +2,19 @@ import api.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import entities.Project;
+import managers.Param;
+import managers.ProjectManager;
+import org.apache.http.HttpStatus;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import static configuration.EnvVariablesPool.dotenv;
 
 public class ProjectsTest {
     ApiRequestBuilder apiRequestBuilder;
+    Project createdProject;
 
-    @BeforeTest
     public void createBasicRequest() {
         apiRequestBuilder = new ApiRequestBuilder();
         apiRequestBuilder.header("X-TrackerToken", dotenv.get("TOKEN"))
@@ -19,9 +22,10 @@ public class ProjectsTest {
     }
 
     @BeforeMethod(onlyForGroups = "getRequest")
-    public void addGetTypeToRequest() {
+    public void addGetTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.GET);
+        createdProject = ProjectManager.create();
     }
 
     @BeforeMethod(onlyForGroups = "postRequest")
@@ -31,36 +35,47 @@ public class ProjectsTest {
     }
 
     @BeforeMethod(onlyForGroups = "putRequest")
-    public void addPutTypeToRequest() {
+    public void addPutTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.PUT);
+        createdProject = ProjectManager.create();
     }
 
     @BeforeMethod(onlyForGroups = "deleteRequest")
-    public void addDeleteTypeToRequest() {
+    public void addDeleteTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.DELETE);
+        createdProject = ProjectManager.create();
     }
+
+    @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest"})
+    public void cleanCreatedOneByGetRequest() {
+        ProjectManager.delete(createdProject.getId().toString());
+    }
+
 
     @Test(groups = "getRequest")
     public void getAllProjectTest() {
-        apiRequestBuilder.endpoint("/projects");
+        apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECTS"));
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 
     @Test(groups = "getRequest")
     public void getAProjectTest() {
-        apiRequestBuilder.endpoint("/projects/{projectId}")
-                .pathParam("projectId", "2504481");
+        apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECT"))
+                .pathParam(Param.PROJECT_ID.getName(), createdProject.getId().toString());
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
         Project project = apiResponse.getBody(Project.class);
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
         Assert.assertEquals(project.getKind(), "project");
+        Assert.assertEquals(project.getId(), createdProject.getId());
+        Assert.assertEquals(project.getName(), createdProject.getName());
+        Assert.assertEquals(project.getAccount_id(), createdProject.getAccount_id());
         apiResponse.validateBodySchema("schemas/project.json");
     }
 
@@ -71,47 +86,50 @@ public class ProjectsTest {
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 
     @Test(groups = "postRequest")
     public void createAProjectTest() throws JsonProcessingException {
         Project projectToSend = new Project();
-        projectToSend.setName("Project 6");
-        apiRequestBuilder.endpoint("/projects")
+        String projectName = "Project 6";
+        projectToSend.setName(projectName);
+        apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECTS"))
                 .body(new ObjectMapper().writeValueAsString(projectToSend));
 
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
-        Project project = apiResponse.getBody(Project.class);
+        createdProject = apiResponse.getBody(Project.class);
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
-        Assert.assertEquals(project.getKind(), "project");
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
+        Assert.assertEquals(createdProject.getKind(), "project");
+        Assert.assertEquals(createdProject.getName(), projectName);
         apiResponse.validateBodySchema("schemas/project.json");
     }
 
     @Test(groups = "putRequest")
     public void updateAProjectTest() throws JsonProcessingException {
         Project projectToSend = new Project();
-        projectToSend.setName("Project 6");
-        apiRequestBuilder.endpoint("/projects/{projectId}")
+        String nameToUpdate = "Project 6";
+        projectToSend.setName(nameToUpdate);
+        apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECT"))
                 .body(new ObjectMapper().writeValueAsString(projectToSend))
-                .pathParam("projectId", "2505059");
+                .pathParam(Param.PROJECT_ID.getName(), createdProject.getId().toString());
 
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
         Project project = apiResponse.getBody(Project.class);
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
-        Assert.assertEquals(project.getName(), "Project 6");
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
+        Assert.assertEquals(project.getName(), nameToUpdate);
     }
 
     @Test(groups = "deleteRequest")
     public void deleteAProject() {
-        apiRequestBuilder.endpoint("/projects/{projectId}")
-                .pathParam("projectId", "2505060");
+        apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECT"))
+                .pathParam(Param.PROJECT_ID.getName(), createdProject.getId().toString());
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 204);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
 
     }
 }

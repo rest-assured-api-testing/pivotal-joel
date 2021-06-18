@@ -18,7 +18,7 @@ public class StoryCommentsTest {
     StoryComment createdStoryComment;
 
 
-    public void createStory() throws JsonProcessingException {
+    public void createStoryComment() throws JsonProcessingException {
         StoryComment storyComment = new StoryComment();
         storyComment.setText("A comment 12-S7");
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
@@ -33,7 +33,7 @@ public class StoryCommentsTest {
         createdStoryComment = apiResponse.getBody(StoryComment.class);
     }
 
-    public void deleteStory() {
+    public void deleteStoryComment() {
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
@@ -57,7 +57,7 @@ public class StoryCommentsTest {
     public void addGetTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.GET);
-        createStory();
+        createStoryComment();
     }
 
     @BeforeMethod(onlyForGroups = "postRequest")
@@ -70,29 +70,29 @@ public class StoryCommentsTest {
     public void addPutTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.PUT);
-        createStory();
+        createStoryComment();
     }
 
     @BeforeMethod(onlyForGroups = "deleteRequest")
     public void addDeleteTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.DELETE);
-        createStory();
+        createStoryComment();
     }
 
     @AfterMethod(onlyForGroups = "getRequest")
     public void cleanCreatedOneByGetRequest() {
-        deleteStory();
+        deleteStoryComment();
     }
 
     @AfterMethod(onlyForGroups = "postRequest")
     public void cleanCreatedOneByPostRequest() {
-        deleteStory();
+        deleteStoryComment();
     }
 
     @AfterMethod(onlyForGroups = "putRequest")
     public void cleanCreatedOneByPutRequest() {
-        deleteStory();
+        deleteStoryComment();
     }
 
 
