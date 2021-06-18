@@ -4,7 +4,7 @@ import api.ApiRequestBuilder;
 import api.ApiResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import entities.Story;
+import entities.StoryTask;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -13,22 +13,23 @@ import org.testng.annotations.Test;
 
 import static configuration.EnvVariablesPool.dotenv;
 
-public class StoryTest {
+public class StoryTasksTest {
     ApiRequestBuilder apiRequestBuilder;
-    Story createdStory;
+    StoryTask createdStoryTask;
 
     public void createStory() throws JsonProcessingException {
-        Story story = new Story();
-        story.setName("Story 7-P1");
+        StoryTask storyTask = new StoryTask();
+        storyTask.setDescription("Task 1-S7");
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
                 .method(ApiMethod.POST)
-                .endpoint("/projects/{projectId}/stories")
+                .endpoint("projects/{projectId}/stories/{storyId}/tasks")
                 .pathParam("projectId", "2504465")
-                .body(new ObjectMapper().writeValueAsString(story));
+                .pathParam("storyId", "178547585")
+                .body(new ObjectMapper().writeValueAsString(storyTask));
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder1.build());
-        createdStory = apiResponse.getBody(Story.class);
+        createdStoryTask = apiResponse.getBody(StoryTask.class);
     }
 
     public void deleteStory() {
@@ -36,8 +37,10 @@ public class StoryTest {
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
                 .method(ApiMethod.DELETE)
-                .endpoint("/stories/{storyId}")
-                .pathParam("storyId", createdStory.getId().toString());
+                .endpoint("/projects/{projectId}/stories/{storyId}/tasks/{taskId}")
+                .pathParam("projectId", "2504465")
+                .pathParam("storyId", "178547585")
+                .pathParam("taskId", createdStoryTask.getId().toString());
 
         ApiManager.execute(apiRequestBuilder1.build());
     }
@@ -93,9 +96,10 @@ public class StoryTest {
 
 
     @Test(groups = "getRequest")
-    public void getAllStoriesOfAProjectTest() {
-        apiRequestBuilder.endpoint("/projects/{projectId}/stories")
-                .pathParam("projectId", "2504481");
+    public void getAllStoryTasksOfAProjectTest() {
+        apiRequestBuilder.endpoint("/projects/{projectId}/stories/{storyId}/tasks")
+                .pathParam("projectId", "2504465")
+                .pathParam("storyId", "178547585");
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 
@@ -103,91 +107,59 @@ public class StoryTest {
     }
 
     @Test(groups = "getRequest")
-    public void getAStoryOfAProjectTest() {
-        apiRequestBuilder.endpoint("/projects/{projectId}/stories/{storyId}")
+    public void getAStoryTaskOfAProjectTest() {
+        apiRequestBuilder.endpoint("/projects/{projectId}/stories/{storyId}/tasks/{taskId}")
                 .pathParam("projectId", "2504465")
-                .pathParam("storyId", createdStory.getId().toString());
+                .pathParam("storyId", "178547585")
+                .pathParam("taskId", createdStoryTask.getId().toString());
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
-        Story story = apiResponse.getBody(Story.class);
+        apiResponse.getResponse().then().log().body();
+        StoryTask storyTask = apiResponse.getBody(StoryTask.class);
 
         Assert.assertEquals(apiResponse.getStatusCode(), 200);
-        Assert.assertEquals(story.getKind(), "story");
+        Assert.assertEquals(storyTask.getKind(), "task");
     }
 
     @Test(groups = "postRequest")
-    public void createAStoryToAProjectTest() throws JsonProcessingException {
-        Story story = new Story();
-        story.setName("Story 4-P1");
-        apiRequestBuilder.endpoint("/projects/{projectId}/stories")
+    public void createAStoryTaskToAProjectTest() throws JsonProcessingException {
+        StoryTask storyTask = new StoryTask();
+        storyTask.setDescription("Story 4-P1");
+        apiRequestBuilder.endpoint("/projects/{projectId}/stories/{storyId}/tasks")
                 .pathParam("projectId", "2504465")
-                .body(new ObjectMapper().writeValueAsString(story));
+                .pathParam("storyId", "178547585")
+                .body(new ObjectMapper().writeValueAsString(storyTask));
 
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
-        createdStory = apiResponse.getBody(Story.class);
+        createdStoryTask = apiResponse.getBody(StoryTask.class);
 
         Assert.assertEquals(apiResponse.getStatusCode(), 200);
-        Assert.assertEquals(createdStory.getName(), "Story 4-P1");
+        Assert.assertEquals(createdStoryTask.getDescription(), "Story 4-P1");
     }
 
     @Test(groups = "putRequest")
-    public void updateAStoryToAProjectTest() throws JsonProcessingException {
-        Story story = new Story();
-        story.setName("Story 5-P1");
-        apiRequestBuilder.endpoint("/projects/{projectId}/stories/{storyId}")
+    public void updateAStoryTaskToAProjectTest() throws JsonProcessingException {
+        StoryTask storyTask = new StoryTask();
+        storyTask.setDescription("Story 5-P1");
+        apiRequestBuilder.endpoint("/projects/{projectId}/stories/{storyId}/tasks/{taskId}")
                 .pathParam("projectId", "2504465")
-                .pathParam("storyId", createdStory.getId().toString())
-                .body(new ObjectMapper().writeValueAsString(story));
+                .pathParam("storyId", "178547585")
+                .pathParam("taskId", createdStoryTask.getId().toString())
+                .body(new ObjectMapper().writeValueAsString(storyTask));
 
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
-        Story createdStory = apiResponse.getBody(Story.class);
+        StoryTask createdStoryTask = apiResponse.getBody(StoryTask.class);
 
         Assert.assertEquals(apiResponse.getStatusCode(), 200);
-        Assert.assertEquals(createdStory.getName(), "Story 5-P1");
+        Assert.assertEquals(createdStoryTask.getDescription(), "Story 5-P1");
     }
 
     @Test(groups = "deleteRequest")
-    public void deleteAStoryToAProjectTest() throws JsonProcessingException {
-        apiRequestBuilder.endpoint("/projects/{projectId}/stories/{storyId}")
+    public void deleteAStoryTaskToAProjectTest() throws JsonProcessingException {
+        apiRequestBuilder.endpoint("/projects/{projectId}/stories/{storyId}/tasks/{taskId}")
                 .pathParam("projectId", "2504465")
-                .pathParam("storyId", createdStory.getId().toString());
-
-        ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
-
-        Assert.assertEquals(apiResponse.getStatusCode(), 204);
-    }
-
-    @Test(groups = "getRequest")
-    public void getAStoryTest() {
-        apiRequestBuilder.endpoint("/stories/{storyId}")
-                .pathParam("storyId", createdStory.getId().toString());
-
-        ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
-        Story story = apiResponse.getBody(Story.class);
-
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
-        Assert.assertEquals(story.getKind(), "story");
-    }
-
-    @Test(groups = "putRequest")
-    public void updateAStoryTest() throws JsonProcessingException {
-        Story story = new Story();
-        story.setName("Story 6-P1");
-        apiRequestBuilder.endpoint("/stories/{storyId}")
-                .pathParam("storyId", createdStory.getId().toString())
-                .body(new ObjectMapper().writeValueAsString(story));
-
-        ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
-        Story createdStory = apiResponse.getBody(Story.class);
-
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
-        Assert.assertEquals(createdStory.getName(), "Story 6-P1");
-    }
-
-    @Test(groups = "deleteRequest")
-    public void deleteAStoryTest() {
-        apiRequestBuilder.endpoint("/stories/{storyId}")
-                .pathParam("storyId", createdStory.getId().toString());
+                .pathParam("storyId", "178547585")
+                .pathParam("taskId", createdStoryTask.getId().toString());
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 
