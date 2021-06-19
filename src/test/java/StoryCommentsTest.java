@@ -66,7 +66,7 @@ public class StoryCommentsTest {
 
     @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest", "deleteBadRequest",
             "deleteRequest", "postBadRequest"})
-    public void cleanCreatedOneByGetRequest() {
+    public void cleanCreatedRequirements() {
         ProjectManager.delete(createdProject.getId().toString());
     }
 
@@ -130,7 +130,7 @@ public class StoryCommentsTest {
     }
 
     @Test(groups = "deleteRequest")
-    public void deleteACommentOfAStoryTest() throws JsonProcessingException {
+    public void deleteACommentOfAStoryTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_COMMENT))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId().toString())
                 .pathParam(PathParam.STORY_ID, createdStory.getId().toString())
@@ -142,7 +142,7 @@ public class StoryCommentsTest {
     }
 
     @Test(groups = "getRequest")
-    public void getAllCommentsOfAStoryTest2() {
+    public void doNotGetAllCommentsOfAStoryTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_COMMENTS))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId().toString())
                 .pathParam(PathParam.STORY_ID, " ");
@@ -153,7 +153,7 @@ public class StoryCommentsTest {
     }
 
     @Test(groups = "getRequest")
-    public void getACommentOfAStoryTest2() {
+    public void doNotGetACommentOfAStoryTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_COMMENT))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId().toString())
                 .pathParam(PathParam.STORY_ID, createdStory.getId().toString())
@@ -165,7 +165,7 @@ public class StoryCommentsTest {
     }
 
     @Test(groups = "postBadRequest")
-    public void createACommentOfAStoryTest2() throws JsonProcessingException {
+    public void doNotCreateACommentOfAStoryTest() throws JsonProcessingException {
         StoryComment storyComment = new StoryComment();
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_COMMENTS))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId().toString())
@@ -178,7 +178,7 @@ public class StoryCommentsTest {
     }
 
     @Test(groups = "putRequest")
-    public void updateACommentOfAStoryTest2() throws JsonProcessingException {
+    public void doNotUpdateACommentOfAStoryTest() throws JsonProcessingException {
         StoryComment storyComment = new StoryComment();
         storyComment.setText("Comment 5-P1");
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_COMMENT))
@@ -193,7 +193,7 @@ public class StoryCommentsTest {
     }
 
     @Test(groups = {"deleteRequest", "deleteBadRequest"})
-    public void deleteACommentOfAStoryTest2() throws JsonProcessingException {
+    public void doNotDeleteACommentOfAStoryTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_COMMENT))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId().toString())
                 .pathParam(PathParam.STORY_ID, createdStory.getId().toString())

@@ -1,7 +1,7 @@
 package managers;
 
 public enum Param {
-    PROJECT_ID("projectId"),
+//    PROJECT_ID("projectId"),
     STORY_ID("storyId"),
     EPIC_ID("epicId");
 

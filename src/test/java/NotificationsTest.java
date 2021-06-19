@@ -1,4 +1,6 @@
 import api.*;
+import managers.Endpoints;
+import org.apache.http.HttpStatus;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
@@ -12,7 +14,7 @@ public class NotificationsTest {
     @BeforeTest
     public void createBasicRequest() {
         apiRequestBuilder = new ApiRequestBuilder()
-                .header("X-TrackerToken", dotenv.get("TOKEN"))
+                .header("X-TrackerToken", dotenv.get(Endpoints.TOKEN))
                 .baseUri(dotenv.get("BASE_URL"));
     }
 
@@ -29,6 +31,6 @@ public class NotificationsTest {
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
         apiResponse.getResponse().then().log().body();
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 }

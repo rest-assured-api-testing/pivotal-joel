@@ -19,8 +19,8 @@ public class EpicManager {
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
                 .method(ApiMethod.POST)
-                .endpoint("/projects/{projectId}/epics")
-                .pathParam("projectId", idProject)
+                .endpoint(dotenv.get(Endpoints.PROJECT_EPICS))
+                .pathParam(PathParam.PROJECT_ID, idProject)
                 .body(new ObjectMapper().writeValueAsString(epic));
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder1.build());
         return apiResponse.getBody(Epic.class);
@@ -31,9 +31,9 @@ public class EpicManager {
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
                 .method(ApiMethod.DELETE)
-                .endpoint("/projects/{projectId}/epics/{epicId}")
-                .pathParam("projectId", idProject)
-                .pathParam("epicId", idEpic);
+                .endpoint(dotenv.get(Endpoints.PROJECT_EPIC))
+                .pathParam(PathParam.PROJECT_ID, idProject)
+                .pathParam(PathParam.EPIC_ID, idEpic);
 
         ApiManager.execute(apiRequestBuilder1.build());
     }

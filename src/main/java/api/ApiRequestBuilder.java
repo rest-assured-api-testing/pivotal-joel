@@ -1,8 +1,5 @@
 package api;
 
-import managers.Param;
-import managers.Param2;
-
 public class ApiRequestBuilder implements IBuilder {
     ApiRequest apiRequest = new ApiRequest();
 

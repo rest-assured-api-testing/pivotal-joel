@@ -6,7 +6,6 @@ import api.ApiRequestBuilder;
 import api.ApiResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import entities.Story;
 import entities.StoryComment;
 
 import static configuration.EnvVariablesPool.dotenv;
@@ -20,9 +19,9 @@ public class StoryCommentManager {
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
                 .method(ApiMethod.POST)
-                .endpoint("/projects/{projectId}/stories/{storyId}/comments")
-                .pathParam("projectId", idProject)
-                .pathParam("storyId", idStory)
+                .endpoint(dotenv.get(Endpoints.STORY_COMMENTS))
+                .pathParam(PathParam.PROJECT_ID, idProject)
+                .pathParam(PathParam.STORY_ID, idStory)
                 .body(new ObjectMapper().writeValueAsString(storyComment));
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder1.build());
         return apiResponse.getBody(StoryComment.class);
@@ -33,10 +32,10 @@ public class StoryCommentManager {
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
                 .method(ApiMethod.DELETE)
-                .endpoint("/projects/{projectId}/stories/{storyId}/comments/{commentId}")
-                .pathParam("projectId", idProject)
-                .pathParam("storyId", idStory)
-                .pathParam("commentId", idComment);
+                .endpoint(dotenv.get(Endpoints.STORY_COMMENT))
+                .pathParam(PathParam.PROJECT_ID, idProject)
+                .pathParam(PathParam.STORY_ID, idStory)
+                .pathParam(PathParam.COMMENT_ID, idComment);
 
         ApiManager.execute(apiRequestBuilder1.build());
     }

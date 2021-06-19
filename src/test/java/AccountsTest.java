@@ -1,5 +1,6 @@
 import api.*;
 import entities.Account;
+import org.apache.http.HttpStatus;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -27,7 +28,7 @@ public class AccountsTest {
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 
     @Test(groups = "getRequest")
@@ -39,9 +40,8 @@ public class AccountsTest {
 
         Account account = apiResponse.getBody(Account.class);
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
         Assert.assertEquals(account.getKind(), "account");
-        apiResponse.validateBodySchema("schemas/account.json");
 
     }
 
@@ -52,6 +52,6 @@ public class AccountsTest {
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 
         apiResponse.getResponse().then().log().body();
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 }

@@ -21,8 +21,8 @@ public class MembershipManager {
         apiRequestBuilder.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
                 .method(ApiMethod.POST)
-                .endpoint("/projects/{projectId}/memberships")
-                .pathParam("projectId", idProject)
+                .endpoint(dotenv.get(Endpoints.PROJECT_MEMBERSHIPS))
+                .pathParam(PathParam.PROJECT_ID, idProject)
                 .body(new ObjectMapper().writeValueAsString(projectMembership));
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
         return apiResponse.getBody(Membership.class);
@@ -33,9 +33,9 @@ public class MembershipManager {
         apiRequestBuilder.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
                 .method(ApiMethod.DELETE)
-                .endpoint("/projects/{projectId}/memberships/{memberId}")
-                .pathParam("projectId", idProject)
-                .pathParam("memberId", idMember);
+                .endpoint(dotenv.get(Endpoints.PROJECT_MEMBERSHIP))
+                .pathParam(PathParam.PROJECT_ID, idProject)
+                .pathParam(PathParam.MEMBER_ID, idMember);
 
         ApiManager.execute(apiRequestBuilder.build());
     }

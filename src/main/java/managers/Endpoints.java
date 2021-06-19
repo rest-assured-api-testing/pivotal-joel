@@ -2,6 +2,7 @@ package managers;
 
 public class Endpoints {
 
+    public static final String TOKEN = "TOKEN";
     public static final String STORY_TASKS = "ENDPOINT_STORY_TASKS";
     public static final String STORY_TASK = "ENDPOINT_STORY_TASK";
     public static final String STORY_COMMENTS = "ENDPOINT_STORY_COMMENTS";
@@ -25,4 +26,6 @@ public class Endpoints {
     public static final String PROJECT_LABEL = "ENDPOINT_PROJECT_LABEL";
     public static final String PROJECT_WEBHOOKS = "ENDPOINT_PROJECT_WEBHOOKS";
     public static final String PROJECT_WEBHOOK = "ENDPOINT_PROJECT_WEBHOOK";
+    public static final String WORKSPACES = "ENDPOINT_WORKSPACES";
+    public static final String WORKSPACE = "ENDPOINT_WORKSPACE";
 }

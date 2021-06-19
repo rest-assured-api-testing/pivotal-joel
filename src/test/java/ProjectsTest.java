@@ -3,7 +3,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import entities.Project;
 import managers.Endpoints;
-import managers.Param;
+import managers.PathParam;
 import managers.ProjectManager;
 import org.apache.http.HttpStatus;
 import org.testng.Assert;
@@ -50,14 +50,14 @@ public class ProjectsTest {
     }
 
     @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest", "deleteBadRequest"})
-    public void cleanCreatedOneByGetRequest() {
+    public void cleanCreatedRequirements() {
         ProjectManager.delete(createdProject.getId().toString());
     }
 
 
     @Test(groups = "getRequest")
     public void getAllProjectTest() {
-        apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECTS"));
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECTS));
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 
@@ -67,7 +67,7 @@ public class ProjectsTest {
     @Test(groups = "getRequest")
     public void getAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT))
-                .pathParam(Param.PROJECT_ID.getText(), createdProject.getId().toString());
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId().toString());
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
         Project project = apiResponse.getBody(Project.class);
@@ -114,7 +114,7 @@ public class ProjectsTest {
         projectToSend.setName(nameToUpdate);
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT))
                 .body(new ObjectMapper().writeValueAsString(projectToSend))
-                .pathParam(Param.PROJECT_ID.getText(), createdProject.getId().toString());
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId().toString());
 
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
         Project project = apiResponse.getBody(Project.class);
@@ -126,7 +126,7 @@ public class ProjectsTest {
     @Test(groups = "deleteRequest")
     public void deleteAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT))
-                .pathParam(Param.PROJECT_ID.getText(), createdProject.getId().toString());
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId().toString());
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 
@@ -146,7 +146,7 @@ public class ProjectsTest {
     @Test(groups = "getRequest")
     public void doNotGetAProjectWithBadUrlTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT))
-                .pathParam(Param.PROJECT_ID.getText(), " ");
+                .pathParam(PathParam.PROJECT_ID, " ");
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 
@@ -156,7 +156,7 @@ public class ProjectsTest {
     @Test(groups = "getRequest")
     public void doNotGetAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT))
-                .pathParam(Param.PROJECT_ID.getText(), "1");
+                .pathParam(PathParam.PROJECT_ID, "1");
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 
@@ -181,7 +181,7 @@ public class ProjectsTest {
         projectToSend.setName(nameToUpdate);
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT))
                 .body(new ObjectMapper().writeValueAsString(projectToSend))
-                .pathParam(Param.PROJECT_ID.getText(), "");
+                .pathParam(PathParam.PROJECT_ID, "");
 
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
 
@@ -191,7 +191,7 @@ public class ProjectsTest {
     @Test(groups = {"deleteRequest", "deleteBadRequest"})
     public void doNotDeleteAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT))
-                .pathParam(Param.PROJECT_ID.getText(), "");
+                .pathParam(PathParam.PROJECT_ID, "");
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 

@@ -18,7 +18,7 @@ public class ProjectManager {
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
                 .method(ApiMethod.POST)
-                .endpoint("/projects")
+                .endpoint(dotenv.get(Endpoints.PROJECTS))
                 .body(new ObjectMapper().writeValueAsString(project));
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder1.build());
         return apiResponse.getBody(Project.class);
@@ -29,8 +29,8 @@ public class ProjectManager {
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
                 .method(ApiMethod.DELETE)
-                .endpoint("/projects/{projectId}")
-                .pathParam("projectId", idProject);
+                .endpoint(dotenv.get(Endpoints.PROJECT))
+                .pathParam(PathParam.PROJECT_ID, idProject);
 
         ApiManager.execute(apiRequestBuilder1.build());
     }

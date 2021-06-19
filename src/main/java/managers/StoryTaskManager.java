@@ -19,9 +19,9 @@ public class StoryTaskManager {
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
                 .method(ApiMethod.POST)
-                .endpoint("projects/{projectId}/stories/{storyId}/tasks")
-                .pathParam("projectId", idProject)
-                .pathParam("storyId", idStory)
+                .endpoint(dotenv.get(Endpoints.STORY_TASKS))
+                .pathParam(PathParam.PROJECT_ID, idProject)
+                .pathParam(PathParam.STORY_ID, idStory)
                 .body(new ObjectMapper().writeValueAsString(storyTask));
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder1.build());
         return apiResponse.getBody(StoryTask.class);
@@ -32,10 +32,10 @@ public class StoryTaskManager {
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
                 .method(ApiMethod.DELETE)
-                .endpoint("/projects/{projectId}/stories/{storyId}/tasks/{taskId}")
-                .pathParam("projectId", idProject)
-                .pathParam("storyId", idStory)
-                .pathParam("taskId", idStoryTask);
+                .endpoint(dotenv.get(Endpoints.STORY_TASK))
+                .pathParam(PathParam.PROJECT_ID, idProject)
+                .pathParam(PathParam.STORY_ID, idStory)
+                .pathParam(PathParam.TASK_ID, idStoryTask);
 
         ApiManager.execute(apiRequestBuilder1.build());
     }

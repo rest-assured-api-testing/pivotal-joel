@@ -64,7 +64,7 @@ public class WebhooksTest {
     }
 
     @Test(groups = "getRequest")
-    public void getAllLabelsOfAProjectTest() {
+    public void getAllWebhooksOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_WEBHOOKS))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId());
 
@@ -74,7 +74,7 @@ public class WebhooksTest {
     }
 
     @Test(groups = "getRequest")
-    public void getALabelOfAProjectTest() {
+    public void getAWebhookOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_WEBHOOK))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId())
                 .pathParam(PathParam.WEBHOOK_ID, createdWebhook.getId());
@@ -87,7 +87,7 @@ public class WebhooksTest {
     }
 
     @Test(groups= "postRequest")
-    public void createALabelToAProjectTest() throws JsonProcessingException {
+    public void createAWebhookToAProjectTest() throws JsonProcessingException {
         Webhook webhook = new Webhook();
         webhook.setEnabled(true);
         webhook.setWebhook_url("https://pastebin2.com/fred");
@@ -105,7 +105,7 @@ public class WebhooksTest {
     }
 
     @Test(groups = "putRequest")
-    public void updateALabelToAProjectTest() throws JsonProcessingException {
+    public void updateAWebhookOfAProjectTest() throws JsonProcessingException {
         Webhook webhook = new Webhook();
         webhook.setWebhook_url("https://pastebin3.com/fred");
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_WEBHOOK))
@@ -121,7 +121,7 @@ public class WebhooksTest {
     }
 
     @Test(groups = "deleteRequest")
-    public void deleteALabelToAProjectTest() throws JsonProcessingException {
+    public void deleteAWebhookOfAProjectTest() throws JsonProcessingException {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_WEBHOOK))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId())
                 .pathParam(PathParam.WEBHOOK_ID, createdWebhook.getId());
@@ -131,11 +131,8 @@ public class WebhooksTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
     }
 
-
-
-
     @Test(groups = "getRequest")
-    public void doNotGetAllLabelsOfAProjectTest() {
+    public void doNotGetAllWebhooksOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_WEBHOOKS))
                 .pathParam(PathParam.PROJECT_ID, "");
 
@@ -145,7 +142,7 @@ public class WebhooksTest {
     }
 
     @Test(groups = "getRequest")
-    public void doNotGetALabelOfAProjectTest() {
+    public void doNotGetAWebhookOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_WEBHOOK))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId())
                 .pathParam(PathParam.WEBHOOK_ID, " ");
@@ -156,7 +153,7 @@ public class WebhooksTest {
     }
 
     @Test(groups = "postBadRequest")
-    public void doNotCreateALabelToAProjectTest() throws JsonProcessingException {
+    public void doNotCreateAWebhookToAProjectTest() throws JsonProcessingException {
         Webhook webhook = new Webhook();
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_WEBHOOKS))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId())
@@ -168,7 +165,7 @@ public class WebhooksTest {
     }
 
     @Test(groups = "putRequest")
-    public void doNotUpdateALabelToAProjectTest2() throws JsonProcessingException {
+    public void doNotUpdateAWebhookOfAProjectTest() throws JsonProcessingException {
         Webhook webhook = new Webhook();
         webhook.setEnabled(true);
         webhook.setWebhook_url("https://pastebin2.com/fred");
@@ -183,7 +180,7 @@ public class WebhooksTest {
     }
 
     @Test(groups = {"deleteRequest", "deleteBadRequest"})
-    public void doNotDeleteALabelToAProjectTest() throws JsonProcessingException {
+    public void doNotDeleteAWebhookOfAProjectTest() throws JsonProcessingException {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_WEBHOOK))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId())
                 .pathParam(PathParam.WEBHOOK_ID, "");

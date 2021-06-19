@@ -22,7 +22,6 @@ public class IterationsTest {
     ApiRequestBuilder apiRequestBuilder;
     Project createdProject;
 
-//    @BeforeTest
     public void createBasicRequest() {
         apiRequestBuilder = new ApiRequestBuilder();
         apiRequestBuilder.header("X-TrackerToken", dotenv.get("TOKEN"))
@@ -86,7 +85,7 @@ public class IterationsTest {
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
         IterationOverride iterationOverride = apiResponse.getBody(IterationOverride.class);
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
         Assert.assertEquals(iterationOverride.getLength(), 5);
         Assert.assertEquals(iterationOverride.getTeam_strength(), 0.7f);
     }

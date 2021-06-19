@@ -7,6 +7,7 @@ import api.ApiResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import entities.EpicComment;
+
 import static configuration.EnvVariablesPool.dotenv;
 
 public class EpicCommentManager {
@@ -19,7 +20,7 @@ public class EpicCommentManager {
                 .method(ApiMethod.POST)
                 .endpoint(dotenv.get(Endpoints.EPIC_COMMENTS))
                 .pathParam(PathParam.PROJECT_ID, idProject)
-                .pathParam("epicId", idEpic)
+                .pathParam(PathParam.EPIC_ID, idEpic)
                 .body(new ObjectMapper().writeValueAsString(epicComment));
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder1.build());
         return apiResponse.getBody(EpicComment.class);
@@ -32,8 +33,8 @@ public class EpicCommentManager {
                 .method(ApiMethod.DELETE)
                 .endpoint(dotenv.get(Endpoints.EPIC_COMMENT))
                 .pathParam(PathParam.PROJECT_ID, idProject)
-                .pathParam("epicId", idEpic)
-                .pathParam("commentId", idComment);
+                .pathParam(PathParam.EPIC_ID, idEpic)
+                .pathParam(PathParam.COMMENT_ID, idComment);
 
         ApiManager.execute(apiRequestBuilder1.build());
     }

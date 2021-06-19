@@ -57,7 +57,7 @@ public class EpicsTest {
 
     @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest", "deleteBadRequest",
             "deleteRequest", "postBadRequest"})
-    public void cleanCreatedOneByGetRequest() {
+    public void cleanCreatedRequirements() {
         ProjectManager.delete(createdProject.getId().toString());
     }
 
@@ -141,7 +141,7 @@ public class EpicsTest {
     }
 
     @Test(groups = "getRequest")
-    public void DoNotGetAllEpicsOfAProjectTest() {
+    public void doNotGetAllEpicsOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPICS))
                 .pathParam(PathParam.PROJECT_ID, "");
 
@@ -151,7 +151,7 @@ public class EpicsTest {
     }
 
     @Test(groups = "getRequest")
-    public void DoNotGetAnEpicOfAProjectTest() {
+    public void doNotGetAnEpicOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPIC))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId())
                 .pathParam(PathParam.EPIC_ID, " ");
@@ -162,7 +162,7 @@ public class EpicsTest {
     }
 
     @Test(groups = "postBadRequest")
-    public void DoNotCreateAnEpicToAProjectTest() throws JsonProcessingException {
+    public void doNotCreateAnEpicToAProjectTest() throws JsonProcessingException {
         Epic epic = new Epic();
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPICS))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId())
@@ -174,7 +174,7 @@ public class EpicsTest {
     }
 
     @Test(groups = "putRequest")
-    public void DoNotUpdateAnEpicToAProjectTest() throws JsonProcessingException {
+    public void doNotUpdateAnEpicToAProjectTest() throws JsonProcessingException {
         Epic epic = new Epic();
         epic.setName("Epic 5-P1");
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPIC))
@@ -188,7 +188,7 @@ public class EpicsTest {
     }
 
     @Test(groups = {"deleteRequest", "deleteBadRequest"})
-    public void DoNotDeleteAnEpicToAProjectTest() {
+    public void doNotDeleteAnEpicToAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPIC))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId())
                 .pathParam(PathParam.EPIC_ID, "");
@@ -199,7 +199,7 @@ public class EpicsTest {
     }
 
     @Test(groups = "getRequest")
-    public void DoNotGetAnEpicTest() {
+    public void doNotGetAnEpicTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC))
                 .pathParam(PathParam.EPIC_ID, "");
 

@@ -102,7 +102,7 @@ public class LabelsTest {
     }
 
     @Test(groups = "putRequest")
-    public void updateALabelToAProjectTest() throws JsonProcessingException {
+    public void updateALabelOfAProjectTest() throws JsonProcessingException {
         Label label = new Label();
         label.setName("label 5-p1");
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_LABEL))
@@ -118,7 +118,7 @@ public class LabelsTest {
     }
 
     @Test(groups = "deleteRequest")
-    public void deleteALabelToAProjectTest() throws JsonProcessingException {
+    public void deleteALabelOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_LABEL))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId())
                 .pathParam(PathParam.LABEL_ID, createdLabel.getId());
@@ -127,9 +127,6 @@ public class LabelsTest {
 
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
     }
-
-
-
 
     @Test(groups = "getRequest")
     public void doNotGetAllLabelsOfAProjectTest() {
@@ -165,7 +162,7 @@ public class LabelsTest {
     }
 
     @Test(groups = "putRequest")
-    public void doNotUpdateALabelToAProjectTest2() throws JsonProcessingException {
+    public void doNotUpdateALabelOfAProjectTest() throws JsonProcessingException {
         Label label = new Label();
         label.setName("Story 5-P1");
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_LABEL))
@@ -179,7 +176,7 @@ public class LabelsTest {
     }
 
     @Test(groups = {"deleteRequest", "deleteBadRequest"})
-    public void doNotDeleteALabelToAProjectTest() throws JsonProcessingException {
+    public void doNotDeleteALabelOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_LABEL))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId())
                 .pathParam(PathParam.LABEL_ID, "");

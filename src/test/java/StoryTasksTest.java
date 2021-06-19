@@ -66,7 +66,7 @@ public class StoryTasksTest {
 
     @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest", "deleteBadRequest",
             "deleteRequest", "postBadRequest"})
-    public void cleanCreatedOneByGetRequest() {
+    public void cleanCreatedRequirements() {
         ProjectManager.delete(createdProject.getId().toString());
     }
 
@@ -78,7 +78,7 @@ public class StoryTasksTest {
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 
     @Test(groups = "getRequest")
@@ -92,7 +92,7 @@ public class StoryTasksTest {
         apiResponse.getResponse().then().log().body();
         StoryTask storyTask = apiResponse.getBody(StoryTask.class);
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
         Assert.assertEquals(storyTask.getKind(), "task");
     }
 
@@ -108,12 +108,12 @@ public class StoryTasksTest {
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
         createdStoryTask = apiResponse.getBody(StoryTask.class);
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
         Assert.assertEquals(createdStoryTask.getDescription(), "Story 4-P1");
     }
 
     @Test(groups = "putRequest")
-    public void updateAStoryTaskToAProjectTest() throws JsonProcessingException {
+    public void updateAStoryTaskOfAProjectTest() throws JsonProcessingException {
         StoryTask storyTask = new StoryTask();
         storyTask.setDescription("Story 5-P1");
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_TASK))
@@ -125,12 +125,12 @@ public class StoryTasksTest {
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
         StoryTask createdStoryTask = apiResponse.getBody(StoryTask.class);
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
         Assert.assertEquals(createdStoryTask.getDescription(), "Story 5-P1");
     }
 
     @Test(groups = "deleteRequest")
-    public void deleteAStoryTaskToAProjectTest() throws JsonProcessingException {
+    public void deleteAStoryTaskOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_TASK))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId().toString())
                 .pathParam(PathParam.STORY_ID, createdStory.getId().toString())
@@ -138,11 +138,11 @@ public class StoryTasksTest {
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 204);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
     }
 
     @Test(groups = "getRequest")
-    public void getAllStoryTasksOfAProjectTest2() {
+    public void doNotGetAllStoryTasksOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_TASKS))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId().toString())
                 .pathParam(PathParam.STORY_ID, " ");
@@ -153,7 +153,7 @@ public class StoryTasksTest {
     }
 
     @Test(groups = "getRequest")
-    public void getAStoryTaskOfAProjectTest2() {
+    public void doNotGetAStoryTaskOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_TASK))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId().toString())
                 .pathParam(PathParam.STORY_ID, createdStory.getId().toString())
@@ -165,7 +165,7 @@ public class StoryTasksTest {
     }
 
     @Test(groups = "postBadRequest")
-    public void createAStoryTaskToAProjectTest2() throws JsonProcessingException {
+    public void doNotCreateAStoryTaskToAProjectTest() throws JsonProcessingException {
         StoryTask storyTask = new StoryTask();
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_TASKS))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId().toString())
@@ -178,7 +178,7 @@ public class StoryTasksTest {
     }
 
     @Test(groups = "putRequest")
-    public void updateAStoryTaskToAProjectTest2() throws JsonProcessingException {
+    public void doNotUpdateAStoryTaskOfAProjectTest() throws JsonProcessingException {
         StoryTask storyTask = new StoryTask();
         storyTask.setDescription("Story 5-P1");
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_TASK))
@@ -193,7 +193,7 @@ public class StoryTasksTest {
     }
 
     @Test(groups = {"deleteRequest", "deleteBadRequest"})
-    public void deleteAStoryTaskToAProjectTest2() throws JsonProcessingException {
+    public void doNotDeleteAStoryTaskOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_TASK))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId().toString())
                 .pathParam(PathParam.STORY_ID, createdStory.getId().toString())

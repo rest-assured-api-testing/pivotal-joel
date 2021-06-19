@@ -19,8 +19,8 @@ public class WebhookManager {
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
                 .method(ApiMethod.POST)
-                .endpoint("/projects/{projectId}/webhooks")
-                .pathParam("projectId", idProject)
+                .endpoint(dotenv.get(Endpoints.PROJECT_WEBHOOKS))
+                .pathParam(PathParam.PROJECT_ID, idProject)
                 .body(new ObjectMapper().writeValueAsString(webhook));
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder1.build());
         return apiResponse.getBody(Webhook.class);
@@ -31,9 +31,9 @@ public class WebhookManager {
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
                 .method(ApiMethod.DELETE)
-                .endpoint("/projects/{projectId}/webhooks/{webhookId}")
-                .pathParam("projectId", idProject)
-                .pathParam("webhookId", idWebhook);
+                .endpoint(dotenv.get(Endpoints.PROJECT_WEBHOOK))
+                .pathParam(PathParam.PROJECT_ID, idProject)
+                .pathParam(PathParam.WEBHOOK_ID, idWebhook);
 
         ApiManager.execute(apiRequestBuilder1.build());
     }

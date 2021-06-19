@@ -18,8 +18,8 @@ public class LabelManager {
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
                 .method(ApiMethod.POST)
-                .endpoint("/projects/{projectId}/labels")
-                .pathParam("projectId", idProject)
+                .endpoint(dotenv.get(Endpoints.PROJECT_LABELS))
+                .pathParam(PathParam.PROJECT_ID, idProject)
                 .body(new ObjectMapper().writeValueAsString(label));
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder1.build());
         return apiResponse.getBody(Label.class);
@@ -30,9 +30,9 @@ public class LabelManager {
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
                 .method(ApiMethod.DELETE)
-                .endpoint("/projects/{projectId}/labels/{labelId}")
-                .pathParam("projectId", idProject)
-                .pathParam("labelId", idLabel);
+                .endpoint(dotenv.get(Endpoints.PROJECT_LABEL))
+                .pathParam(PathParam.PROJECT_ID, idProject)
+                .pathParam(PathParam.LABEL_ID, idLabel);
 
         ApiManager.execute(apiRequestBuilder1.build());
     }

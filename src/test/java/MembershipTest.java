@@ -63,7 +63,7 @@ public class MembershipTest {
     }
 
     @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest", "deleteRequest"})
-    public void cleanCreatedOneByGetRequest() {
+    public void cleanCreatedRequirements() {
         ProjectManager.delete(createdProject.getId().toString());
     }
 
@@ -154,7 +154,7 @@ public class MembershipTest {
     }
 
     @Test(groups = "postRequest")
-    public void DoNotAddAMemberToAProjectTest() throws JsonProcessingException {
+    public void doNotAddAMemberToAProjectTest() throws JsonProcessingException {
         ProjectMembership projectMembership = new ProjectMembership();
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_MEMBERSHIPS))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId())
