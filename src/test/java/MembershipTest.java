@@ -1,0 +1,230 @@
+import api.ApiManager;
+import api.ApiMethod;
+import api.ApiRequestBuilder;
+import api.ApiResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import entities.Membership;
+import entities.Project;
+import entities.ProjectMembership;
+import managers.Endpoints;
+import managers.MembershipManager;
+import managers.PathParam;
+import managers.ProjectManager;
+import org.apache.http.HttpStatus;
+import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
+
+import static configuration.EnvVariablesPool.dotenv;
+
+/**
+ * Tests membership endpoint of a pivotal-tracker account.
+ */
+public class MembershipTest {
+    ApiRequestBuilder apiRequestBuilder;
+    Project createdProject;
+    Membership createdMembership;
+
+    public void createBasicRequest() {
+        apiRequestBuilder = new ApiRequestBuilder();
+        apiRequestBuilder.header("X-TrackerToken", dotenv.get("TOKEN"))
+                .baseUri(dotenv.get("BASE_URL"));
+    }
+
+    @BeforeMethod(onlyForGroups = "getRequest")
+    public void addGetTypeToRequest() throws JsonProcessingException {
+        createBasicRequest();
+        apiRequestBuilder.method(ApiMethod.GET);
+        createdProject = ProjectManager.create();
+        createdMembership = MembershipManager.create(createdProject.getId().toString());
+    }
+
+    @BeforeMethod(onlyForGroups = "postRequest")
+    public void addPostTypeToRequest() throws JsonProcessingException {
+        createBasicRequest();
+        apiRequestBuilder.method(ApiMethod.POST);
+        createdProject = ProjectManager.create();
+    }
+
+
+    @BeforeMethod(onlyForGroups = "putRequest")
+    public void addPutTypeToRequest() throws JsonProcessingException {
+        createBasicRequest();
+        apiRequestBuilder.method(ApiMethod.PUT);
+        createdProject = ProjectManager.create();
+        createdMembership = MembershipManager.create(createdProject.getId().toString());
+    }
+
+    @BeforeMethod(onlyForGroups = "deleteRequest")
+    public void addDeleteTypeToRequest() throws JsonProcessingException {
+        createBasicRequest();
+        apiRequestBuilder.method(ApiMethod.DELETE);
+        createdProject = ProjectManager.create();
+        createdMembership = MembershipManager.create(createdProject.getId().toString());
+    }
+
+    @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest", "deleteRequest"})
+    public void cleanCreatedRequirements() {
+        ProjectManager.delete(createdProject.getId().toString());
+    }
+
+    /**
+     * Tests that membership endpoint gives us all memberships.
+     */
+    @Test(groups = "getRequest")
+    public void getAllMembersOfAProjectTest() {
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_MEMBERSHIPS))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId());
+
+        ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
+        apiResponse.getResponse().then().log().body();
+    }
+
+    /**
+     * Tests that membership endpoint gives us a specific membership.
+     */
+    @Test(groups = "getRequest")
+    public void getAMemberTest() {
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_MEMBERSHIP))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .pathParam(PathParam.MEMBER_ID, createdMembership.getId());
+
+        ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
+        Membership membership = apiResponse.getBody(Membership.class);
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
+        Assert.assertEquals(membership.getKind(), "project_membership");
+    }
+
+    /**
+     * Tests that membership endpoint creates a membership.
+     */
+    @Test(groups = "postRequest")
+    public void addAMemberToAProjectTest() throws JsonProcessingException {
+        ProjectMembership projectMembership = new ProjectMembership();
+        projectMembership.setEmail("marek19@sith.mil");
+        projectMembership.setRole("member");
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_MEMBERSHIPS))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .body(new ObjectMapper().writeValueAsString(projectMembership));
+
+        ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
+        apiResponse.getResponse().then().log().body();
+    }
+
+    /**
+     * Tests that membership endpoint updates a specific membership.
+     */
+    @Test(groups = "putRequest")
+    public void updateAMemberOfAProjectTest() throws JsonProcessingException {
+        ProjectMembership projectMembership = new ProjectMembership();
+        projectMembership.setRole("viewer");
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_MEMBERSHIP))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .pathParam(PathParam.MEMBER_ID, createdMembership.getId())
+                .body(new ObjectMapper().writeValueAsString(projectMembership));
+
+        ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
+        apiResponse.getResponse().then().log().body();
+    }
+
+    /**
+     * Tests that membership endpoint deletes a specific membership.
+     */
+    @Test(groups = "deleteRequest")
+    public void deleteAMemberOfAProject() {
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_MEMBERSHIP))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .pathParam(PathParam.MEMBER_ID, createdMembership.getId());
+
+        ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
+    }
+
+    /**
+     * Tests that membership endpoint gives us a not found status to respond a wrong url of getting
+     * all memberships.
+     */
+    @Test(groups = "getRequest")
+    public void doNotGetAllMembersOfAProjectTest() {
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_MEMBERSHIPS))
+                .pathParam(PathParam.PROJECT_ID, " ");
+
+        ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
+    }
+
+    /**
+     * Tests that membership endpoint gives us a not found status to respond to a getting request
+     * without membership id.
+     */
+    @Test(groups = "getRequest")
+    public void doNotGetAMemberTest() {
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_MEMBERSHIP))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .pathParam(PathParam.MEMBER_ID, " ");
+
+        ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
+    }
+
+    /**
+     * Tests that membership endpoint gives us a bad request status to respond to a creating request
+     * without membership body.
+     */
+    @Test(groups = "postRequest")
+    public void doNotAddAMemberToAProjectTest() throws JsonProcessingException {
+        ProjectMembership projectMembership = new ProjectMembership();
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_MEMBERSHIPS))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .body(new ObjectMapper().writeValueAsString(projectMembership));
+
+        ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+    }
+
+    /**
+     * Tests that membership endpoint gives us a not found status to respond to a updating request
+     * without a specific membership id.
+     */
+    @Test(groups = "putRequest")
+    public void doNotUpdateAMemberOfAProjectTest() throws JsonProcessingException {
+        ProjectMembership projectMembership = new ProjectMembership();
+        projectMembership.setRole("viewer");
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_MEMBERSHIP))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .pathParam(PathParam.MEMBER_ID, "")
+                .body(new ObjectMapper().writeValueAsString(projectMembership));
+
+        ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
+    }
+
+    /**
+     * Tests that membership endpoint gives us a not found status to respond to a deleting request
+     * without a specific membership id.
+     */
+    @Test(groups = "deleteRequest")
+    public void doNotDeleteAMemberOfAProject() {
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_MEMBERSHIP))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .pathParam(PathParam.MEMBER_ID, "");
+
+        ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
+
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
+    }
+}
