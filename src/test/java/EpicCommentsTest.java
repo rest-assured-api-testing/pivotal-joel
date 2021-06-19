@@ -18,47 +18,6 @@ public class EpicCommentsTest {
     Epic createdEpic;
     EpicComment createdEpicComment;
 
-    public void createEpicComment() throws JsonProcessingException {
-        StoryComment storyComment = new StoryComment();
-        storyComment.setText("A comment 12-S7");
-        ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
-        apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
-                .baseUri(dotenv.get("BASE_URL"))
-                .method(ApiMethod.POST)
-                .endpoint(dotenv.get(Endpoints.EPIC_COMMENTS))
-                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
-                .pathParam("epicId", createdEpic.getId())
-                .body(new ObjectMapper().writeValueAsString(storyComment));
-        ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder1.build());
-        createdEpicComment = apiResponse.getBody(EpicComment.class);
-    }
-
-    public void deleteEpicComment() {
-        ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
-        apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
-                .baseUri(dotenv.get("BASE_URL"))
-                .method(ApiMethod.DELETE)
-                .endpoint(dotenv.get(Endpoints.EPIC_COMMENT))
-                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
-                .pathParam("epicId", createdEpic.getId())
-                .pathParam("commentId", createdEpicComment.getId().toString());
-
-        ApiManager.execute(apiRequestBuilder1.build());
-    }
-
-    @BeforeSuite
-    public void createRequirements() throws JsonProcessingException {
-        createdProject = ProjectManager.create();
-        createdEpic = EpicManager.createEpic(createdProject.getId().toString());
-    }
-
-    @AfterSuite
-    public void deleteRequirements() throws JsonProcessingException {
-        ProjectManager.delete(createdProject.getId().toString());
-        EpicManager.deleteEpic(createdProject.getId().toString(), createdEpic.getId().toString());
-    }
-
-    @BeforeTest
     public void createBasicRequest() {
         apiRequestBuilder = new ApiRequestBuilder();
         apiRequestBuilder.header("X-TrackerToken", dotenv.get("TOKEN"))
@@ -69,32 +28,44 @@ public class EpicCommentsTest {
     public void addGetTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.GET);
-        createEpicComment();
+        createdProject = ProjectManager.create();
+        createdEpic = EpicManager.createEpic(createdProject.getId().toString());
+        createdEpicComment = EpicCommentManager.createEpicComment(createdProject.getId().toString(),
+                createdEpic.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = {"postRequest", "postBadRequest"})
-    public void addPostTypeToRequest() {
+    public void addPostTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.POST);
+        createdProject = ProjectManager.create();
+        createdEpic = EpicManager.createEpic(createdProject.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = "putRequest")
     public void addPutTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.PUT);
-        createEpicComment();
+        createdProject = ProjectManager.create();
+        createdEpic = EpicManager.createEpic(createdProject.getId().toString());
+        createdEpicComment = EpicCommentManager.createEpicComment(createdProject.getId().toString(),
+                createdEpic.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = "deleteRequest")
     public void addDeleteTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.DELETE);
-        createEpicComment();
+        createdProject = ProjectManager.create();
+        createdEpic = EpicManager.createEpic(createdProject.getId().toString());
+        createdEpicComment = EpicCommentManager.createEpicComment(createdProject.getId().toString(),
+                createdEpic.getId().toString());
     }
 
-    @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest", "deleteBadRequest"})
+    @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest", "deleteBadRequest",
+            "deleteRequest", "postBadRequest"})
     public void cleanCreatedOneByGetRequest() {
-        deleteEpicComment();
+        ProjectManager.delete(createdProject.getId().toString());
     }
 
     @Test(groups = "getRequest")
@@ -105,7 +76,7 @@ public class EpicCommentsTest {
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 
     @Test(groups = "getRequest")
@@ -119,7 +90,7 @@ public class EpicCommentsTest {
         apiResponse.getResponse().then().log().body();
         EpicComment storyComment = apiResponse.getBody(EpicComment.class);
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
         Assert.assertEquals(storyComment.getKind(), "comment");
     }
 
@@ -135,7 +106,7 @@ public class EpicCommentsTest {
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
         createdEpicComment = apiResponse.getBody(EpicComment.class);
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
         Assert.assertEquals(createdEpicComment.getText(), "Comment 4-P1");
     }
 
@@ -152,7 +123,7 @@ public class EpicCommentsTest {
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
         EpicComment createdStoryComment = apiResponse.getBody(EpicComment.class);
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
         Assert.assertEquals(createdStoryComment.getText(), "Comment 5-P1");
     }
 
@@ -165,7 +136,7 @@ public class EpicCommentsTest {
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 204);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
     }
 
     @Test(groups = "getRequest")

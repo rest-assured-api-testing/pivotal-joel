@@ -7,10 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import entities.Project;
 import entities.Story;
 import entities.StoryComment;
-import managers.Endpoints;
-import managers.PathParam;
-import managers.ProjectManager;
-import managers.StoryManager;
+import managers.*;
 import org.apache.http.HttpStatus;
 import org.testng.Assert;
 import org.testng.annotations.*;
@@ -21,47 +18,6 @@ public class StoryCommentsTest {
     Project createdProject;
     Story createdStory;
     StoryComment createdStoryComment;
-
-
-    public void createStoryComment() throws JsonProcessingException {
-        StoryComment storyComment = new StoryComment();
-        storyComment.setText("A comment 12-S7");
-        ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
-        apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
-                .baseUri(dotenv.get("BASE_URL"))
-                .method(ApiMethod.POST)
-                .endpoint("/projects/{projectId}/stories/{storyId}/comments")
-                .pathParam("projectId", createdProject.getId().toString())
-                .pathParam("storyId", createdStory.getId().toString())
-                .body(new ObjectMapper().writeValueAsString(storyComment));
-        ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder1.build());
-        createdStoryComment = apiResponse.getBody(StoryComment.class);
-    }
-
-    public void deleteStoryComment() {
-        ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
-        apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
-                .baseUri(dotenv.get("BASE_URL"))
-                .method(ApiMethod.DELETE)
-                .endpoint("/projects/{projectId}/stories/{storyId}/comments/{commentId}")
-                .pathParam("projectId", createdProject.getId().toString())
-                .pathParam("storyId", createdStory.getId().toString())
-                .pathParam("commentId", createdStoryComment.getId().toString());
-
-        ApiManager.execute(apiRequestBuilder1.build());
-    }
-
-    @BeforeSuite
-    public void createProject() throws JsonProcessingException {
-        createdProject = ProjectManager.create();
-        createdStory = StoryManager.createStory(createdProject.getId().toString());
-    }
-
-    @AfterSuite
-    public void deleteProject() throws JsonProcessingException {
-        ProjectManager.delete(createdProject.getId().toString());
-        StoryManager.deleteStory(createdStory.getId().toString());
-    }
 
     @BeforeTest
     public void createBasicRequest() {
@@ -74,32 +30,44 @@ public class StoryCommentsTest {
     public void addGetTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.GET);
-        createStoryComment();
+        createdProject = ProjectManager.create();
+        createdStory = StoryManager.createStory(createdProject.getId().toString());
+        createdStoryComment = StoryCommentManager.createStoryComment(createdProject.getId().toString(),
+                createdStory.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = {"postRequest", "postBadRequest"})
-    public void addPostTypeToRequest() {
+    public void addPostTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.POST);
+        createdProject = ProjectManager.create();
+        createdStory = StoryManager.createStory(createdProject.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = "putRequest")
     public void addPutTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.PUT);
-        createStoryComment();
+        createdProject = ProjectManager.create();
+        createdStory = StoryManager.createStory(createdProject.getId().toString());
+        createdStoryComment = StoryCommentManager.createStoryComment(createdProject.getId().toString(),
+                createdStory.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = "deleteRequest")
     public void addDeleteTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.DELETE);
-        createStoryComment();
+        createdProject = ProjectManager.create();
+        createdStory = StoryManager.createStory(createdProject.getId().toString());
+        createdStoryComment = StoryCommentManager.createStoryComment(createdProject.getId().toString(),
+                createdStory.getId().toString());
     }
 
-    @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest", "deleteBadRequest"})
+    @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest", "deleteBadRequest",
+            "deleteRequest", "postBadRequest"})
     public void cleanCreatedOneByGetRequest() {
-        deleteStoryComment();
+        ProjectManager.delete(createdProject.getId().toString());
     }
 
     @Test(groups = "getRequest")
@@ -140,7 +108,7 @@ public class StoryCommentsTest {
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
         createdStoryComment = apiResponse.getBody(StoryComment.class);
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
         Assert.assertEquals(createdStoryComment.getText(), "Comment 4-P1");
     }
 
@@ -172,8 +140,6 @@ public class StoryCommentsTest {
 
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
     }
-
-    //*******************************************
 
     @Test(groups = "getRequest")
     public void getAllCommentsOfAStoryTest2() {

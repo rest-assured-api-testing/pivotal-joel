@@ -6,9 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import entities.Epic;
 import entities.Project;
-import managers.Endpoint;
-import managers.PathParam;
-import managers.ProjectManager;
+import managers.*;
 import org.apache.http.HttpStatus;
 import org.testng.Assert;
 import org.testng.annotations.*;
@@ -20,42 +18,6 @@ public class EpicsTest {
     Project createdProject;
     Epic createdEpic;
 
-    public void createEpic() throws JsonProcessingException {
-        Epic epic = new Epic();
-        epic.setName("Epic 12-S7");
-        ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
-        apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
-                .baseUri(dotenv.get("BASE_URL"))
-                .method(ApiMethod.POST)
-                .endpoint("/projects/{projectId}/epics")
-                .pathParam("projectId", createdProject.getId().toString())
-                .body(new ObjectMapper().writeValueAsString(epic));
-        ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder1.build());
-        createdEpic = apiResponse.getBody(Epic.class);
-    }
-
-    public void deleteEpic() {
-        ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
-        apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
-                .baseUri(dotenv.get("BASE_URL"))
-                .method(ApiMethod.DELETE)
-                .endpoint("/projects/{projectId}/epics/{epicId}")
-                .pathParam("projectId", createdProject.getId().toString())
-                .pathParam("epicId", createdEpic.getId().toString());
-
-        ApiManager.execute(apiRequestBuilder1.build());
-    }
-    @BeforeSuite
-    public void createProject() throws JsonProcessingException {
-        createdProject = ProjectManager.create();
-    }
-
-    @AfterSuite
-    public void deleteProject() throws JsonProcessingException {
-        ProjectManager.delete(createdProject.getId().toString());
-    }
-
-    @BeforeTest
     public void createBasicRequest() {
         apiRequestBuilder = new ApiRequestBuilder();
         apiRequestBuilder.header("X-TrackerToken", dotenv.get("TOKEN"))
@@ -66,37 +28,42 @@ public class EpicsTest {
     public void addGetTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.GET);
-        createEpic();
+        createdProject = ProjectManager.create();
+        createdEpic = EpicManager.createEpic(createdProject.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = {"postRequest","postBadRequest"})
-    public void addPostTypeToRequest() {
+    public void addPostTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.POST);
+        createdProject = ProjectManager.create();
     }
 
     @BeforeMethod(onlyForGroups = "putRequest")
     public void addPutTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.PUT);
-        createEpic();
+        createdProject = ProjectManager.create();
+        createdEpic = EpicManager.createEpic(createdProject.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = "deleteRequest")
     public void addDeleteTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.DELETE);
-        createEpic();
+        createdProject = ProjectManager.create();
+        createdEpic = EpicManager.createEpic(createdProject.getId().toString());
     }
 
-    @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest", "deleteBadRequest"})
+    @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest", "deleteBadRequest",
+            "deleteRequest", "postBadRequest"})
     public void cleanCreatedOneByGetRequest() {
-        deleteEpic();
+        ProjectManager.delete(createdProject.getId().toString());
     }
 
     @Test(groups = "getRequest")
     public void getAllEpicsOfAProjectTest() {
-        apiRequestBuilder.endpoint(dotenv.get(Endpoint.PROJECT_EPICS.getText()))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPICS))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId());
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
@@ -106,7 +73,7 @@ public class EpicsTest {
 
     @Test(groups = "getRequest")
     public void getAnEpicOfAProjectTest() {
-        apiRequestBuilder.endpoint(dotenv.get(Endpoint.PROJECT_EPIC.getText()))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPIC))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId())
                 .pathParam(PathParam.EPIC_ID, createdEpic.getId());
 
@@ -122,7 +89,7 @@ public class EpicsTest {
     public void createAnEpicToAProjectTest() throws JsonProcessingException {
         Epic epic = new Epic();
         epic.setName("Epic 4-P1");
-        apiRequestBuilder.endpoint(dotenv.get(Endpoint.PROJECT_EPICS.getText()))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPICS))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId())
                 .body(new ObjectMapper().writeValueAsString(epic));
 
@@ -137,7 +104,7 @@ public class EpicsTest {
     public void updateAnEpicToAProjectTest() throws JsonProcessingException {
         Epic epic = new Epic();
         epic.setName("Epic 5-P1");
-        apiRequestBuilder.endpoint(dotenv.get(Endpoint.PROJECT_EPIC.getText()))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPIC))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId())
                 .pathParam(PathParam.EPIC_ID, createdEpic.getId())
                 .body(new ObjectMapper().writeValueAsString(epic));
@@ -151,7 +118,7 @@ public class EpicsTest {
 
     @Test(groups = "deleteRequest")
     public void deleteAnEpicToAProjectTest() {
-        apiRequestBuilder.endpoint(dotenv.get(Endpoint.PROJECT_EPIC.getText()))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPIC))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId())
                 .pathParam(PathParam.EPIC_ID, createdEpic.getId());
 
@@ -162,7 +129,7 @@ public class EpicsTest {
 
     @Test(groups = "getRequest")
     public void getAnEpicTest() {
-        apiRequestBuilder.endpoint(dotenv.get(Endpoint.EPIC.getText()))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC))
                 .pathParam(PathParam.EPIC_ID, createdEpic.getId());
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
@@ -175,7 +142,7 @@ public class EpicsTest {
 
     @Test(groups = "getRequest")
     public void DoNotGetAllEpicsOfAProjectTest() {
-        apiRequestBuilder.endpoint(dotenv.get(Endpoint.PROJECT_EPICS.getText()))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPICS))
                 .pathParam(PathParam.PROJECT_ID, "");
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
@@ -185,7 +152,7 @@ public class EpicsTest {
 
     @Test(groups = "getRequest")
     public void DoNotGetAnEpicOfAProjectTest() {
-        apiRequestBuilder.endpoint(dotenv.get(Endpoint.PROJECT_EPIC.getText()))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPIC))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId())
                 .pathParam(PathParam.EPIC_ID, " ");
 
@@ -197,7 +164,7 @@ public class EpicsTest {
     @Test(groups = "postBadRequest")
     public void DoNotCreateAnEpicToAProjectTest() throws JsonProcessingException {
         Epic epic = new Epic();
-        apiRequestBuilder.endpoint(dotenv.get(Endpoint.PROJECT_EPICS.getText()))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPICS))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId())
                 .body(new ObjectMapper().writeValueAsString(epic));
 
@@ -210,7 +177,7 @@ public class EpicsTest {
     public void DoNotUpdateAnEpicToAProjectTest() throws JsonProcessingException {
         Epic epic = new Epic();
         epic.setName("Epic 5-P1");
-        apiRequestBuilder.endpoint(dotenv.get(Endpoint.PROJECT_EPIC.getText()))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPIC))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId())
                 .pathParam(PathParam.EPIC_ID, "")
                 .body(new ObjectMapper().writeValueAsString(epic));
@@ -222,7 +189,7 @@ public class EpicsTest {
 
     @Test(groups = {"deleteRequest", "deleteBadRequest"})
     public void DoNotDeleteAnEpicToAProjectTest() {
-        apiRequestBuilder.endpoint(dotenv.get(Endpoint.PROJECT_EPIC.getText()))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPIC))
                 .pathParam(PathParam.PROJECT_ID, createdProject.getId())
                 .pathParam(PathParam.EPIC_ID, "");
 
@@ -233,7 +200,7 @@ public class EpicsTest {
 
     @Test(groups = "getRequest")
     public void DoNotGetAnEpicTest() {
-        apiRequestBuilder.endpoint(dotenv.get(Endpoint.EPIC.getText()))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC))
                 .pathParam(PathParam.EPIC_ID, "");
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());

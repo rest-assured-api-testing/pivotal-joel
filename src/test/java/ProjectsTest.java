@@ -2,6 +2,7 @@ import api.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import entities.Project;
+import managers.Endpoints;
 import managers.Param;
 import managers.ProjectManager;
 import org.apache.http.HttpStatus;
@@ -65,7 +66,7 @@ public class ProjectsTest {
 
     @Test(groups = "getRequest")
     public void getAProjectTest() {
-        apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECT"))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT))
                 .pathParam(Param.PROJECT_ID.getText(), createdProject.getId().toString());
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
@@ -81,7 +82,7 @@ public class ProjectsTest {
 
     @Test(groups = "getRequest")
     public void getPeopleInProjectTest() {
-        apiRequestBuilder.endpoint("/my/people")
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PEOPLE))
                 .queryParam("project_id", "2504434");
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
@@ -94,7 +95,7 @@ public class ProjectsTest {
         Project projectToSend = new Project();
         String projectName = "Project 6";
         projectToSend.setName(projectName);
-        apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECTS"))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECTS))
                 .body(new ObjectMapper().writeValueAsString(projectToSend));
 
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
@@ -111,7 +112,7 @@ public class ProjectsTest {
         Project projectToSend = new Project();
         String nameToUpdate = "Project 6";
         projectToSend.setName(nameToUpdate);
-        apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECT"))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT))
                 .body(new ObjectMapper().writeValueAsString(projectToSend))
                 .pathParam(Param.PROJECT_ID.getText(), createdProject.getId().toString());
 
@@ -124,7 +125,7 @@ public class ProjectsTest {
 
     @Test(groups = "deleteRequest")
     public void deleteAProjectTest() {
-        apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECT"))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT))
                 .pathParam(Param.PROJECT_ID.getText(), createdProject.getId().toString());
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
@@ -144,7 +145,7 @@ public class ProjectsTest {
 
     @Test(groups = "getRequest")
     public void doNotGetAProjectWithBadUrlTest() {
-        apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECT"))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT))
                 .pathParam(Param.PROJECT_ID.getText(), " ");
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
@@ -154,7 +155,7 @@ public class ProjectsTest {
 
     @Test(groups = "getRequest")
     public void doNotGetAProjectTest() {
-        apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECT"))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT))
                 .pathParam(Param.PROJECT_ID.getText(), "1");
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
@@ -165,7 +166,7 @@ public class ProjectsTest {
     @Test(groups = "postBadRequest")
     public void doNotCreateAProjectTest() throws JsonProcessingException {
         Project projectToSend = new Project();
-        apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECTS"))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECTS))
                 .body(new ObjectMapper().writeValueAsString(projectToSend));
 
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
@@ -178,7 +179,7 @@ public class ProjectsTest {
         Project projectToSend = new Project();
         String nameToUpdate = "Project 6";
         projectToSend.setName(nameToUpdate);
-        apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECT"))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT))
                 .body(new ObjectMapper().writeValueAsString(projectToSend))
                 .pathParam(Param.PROJECT_ID.getText(), "");
 
@@ -189,7 +190,7 @@ public class ProjectsTest {
 
     @Test(groups = {"deleteRequest", "deleteBadRequest"})
     public void doNotDeleteAProjectTest() {
-        apiRequestBuilder.endpoint(dotenv.get("ENDPOINT_PROJECT"))
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT))
                 .pathParam(Param.PROJECT_ID.getText(), "");
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());

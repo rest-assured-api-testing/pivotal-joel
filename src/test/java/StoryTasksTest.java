@@ -7,10 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import entities.Project;
 import entities.Story;
 import entities.StoryTask;
-import managers.Endpoints;
-import managers.PathParam;
-import managers.ProjectManager;
-import managers.StoryManager;
+import managers.*;
 import org.apache.http.HttpStatus;
 import org.testng.Assert;
 import org.testng.annotations.*;
@@ -22,48 +19,7 @@ public class StoryTasksTest {
     Project createdProject;
     Story createdStory;
     StoryTask createdStoryTask;
-
-    public void createStoryTask() throws JsonProcessingException {
-        StoryTask storyTask = new StoryTask();
-        storyTask.setDescription("Task 1-S7");
-        ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
-        apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
-                .baseUri(dotenv.get("BASE_URL"))
-                .method(ApiMethod.POST)
-                .endpoint("projects/{projectId}/stories/{storyId}/tasks")
-                .pathParam("projectId", createdProject.getId().toString())
-                .pathParam("storyId", createdStory.getId().toString())
-                .body(new ObjectMapper().writeValueAsString(storyTask));
-        ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder1.build());
-        createdStoryTask = apiResponse.getBody(StoryTask.class);
-    }
-
-    public void deleteStoryTask() {
-        ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
-        apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
-                .baseUri(dotenv.get("BASE_URL"))
-                .method(ApiMethod.DELETE)
-                .endpoint("/projects/{projectId}/stories/{storyId}/tasks/{taskId}")
-                .pathParam("projectId", createdProject.getId().toString())
-                .pathParam("storyId", createdStory.getId().toString())
-                .pathParam("taskId", createdStoryTask.getId().toString());
-
-        ApiManager.execute(apiRequestBuilder1.build());
-    }
-
-    @BeforeSuite
-    public void createProject() throws JsonProcessingException {
-        createdProject = ProjectManager.create();
-        createdStory = StoryManager.createStory(createdProject.getId().toString());
-    }
-
-    @AfterSuite
-    public void deleteProject() throws JsonProcessingException {
-        ProjectManager.delete(createdProject.getId().toString());
-        StoryManager.deleteStory(createdStory.getId().toString());
-    }
-
-    @BeforeTest
+    
     public void createBasicRequest() {
         apiRequestBuilder = new ApiRequestBuilder();
         apiRequestBuilder.header("X-TrackerToken", dotenv.get("TOKEN"))
@@ -74,32 +30,44 @@ public class StoryTasksTest {
     public void addGetTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.GET);
-        createStoryTask();
+        createdProject = ProjectManager.create();
+        createdStory = StoryManager.createStory(createdProject.getId().toString());
+        createdStoryTask = StoryTaskManager.createStoryTask(createdProject.getId().toString(),
+                createdStory.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = {"postRequest", "postBadRequest"})
-    public void addPostTypeToRequest() {
+    public void addPostTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.POST);
+        createdProject = ProjectManager.create();
+        createdStory = StoryManager.createStory(createdProject.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = "putRequest")
     public void addPutTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.PUT);
-        createStoryTask();
+        createdProject = ProjectManager.create();
+        createdStory = StoryManager.createStory(createdProject.getId().toString());
+        createdStoryTask = StoryTaskManager.createStoryTask(createdProject.getId().toString(),
+                createdStory.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = "deleteRequest")
     public void addDeleteTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.DELETE);
-        createStoryTask();
+        createdProject = ProjectManager.create();
+        createdStory = StoryManager.createStory(createdProject.getId().toString());
+        createdStoryTask = StoryTaskManager.createStoryTask(createdProject.getId().toString(),
+                createdStory.getId().toString());
     }
 
-    @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest", "deleteBadRequest"})
+    @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest", "deleteBadRequest",
+            "deleteRequest", "postBadRequest"})
     public void cleanCreatedOneByGetRequest() {
-        deleteStoryTask();
+        ProjectManager.delete(createdProject.getId().toString());
     }
 
     @Test(groups = "getRequest")

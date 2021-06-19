@@ -6,17 +6,23 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import entities.Iteration;
 import entities.IterationOverride;
+import entities.Project;
+import managers.Endpoints;
+import managers.PathParam;
+import managers.ProjectManager;
+import org.apache.http.HttpStatus;
 import org.testng.Assert;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import static configuration.EnvVariablesPool.dotenv;
 
 public class IterationsTest {
     ApiRequestBuilder apiRequestBuilder;
+    Project createdProject;
 
-    @BeforeTest
+//    @BeforeTest
     public void createBasicRequest() {
         apiRequestBuilder = new ApiRequestBuilder();
         apiRequestBuilder.header("X-TrackerToken", dotenv.get("TOKEN"))
@@ -24,40 +30,46 @@ public class IterationsTest {
     }
 
     @BeforeMethod(onlyForGroups = "getRequest")
-    public void addGetTypeToRequest() {
+    public void addGetTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.GET);
+        createdProject = ProjectManager.create();
     }
 
     @BeforeMethod(onlyForGroups = "putRequest")
-    public void addPutTypeToRequest() {
+    public void addPutTypeToRequest() throws JsonProcessingException {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.PUT);
+        createdProject = ProjectManager.create();
+    }
+    @AfterMethod(onlyForGroups = {"getRequest", "putRequest"})
+    public void cleanCreatedRequirements() {
+        ProjectManager.delete(createdProject.getId().toString());
     }
 
     @Test(groups = "getRequest")
     public void getAllIterationsOfAProjectTest() {
-        apiRequestBuilder.endpoint("/projects/{projectId}/iterations")
-                .pathParam("projectId", "2504481")
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_ITERATIONS))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
                 .queryParam("limit", "10")
                 .queryParam("offset", "1");
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 
     @Test(groups = "getRequest")
     public void getAIterationsOfAProjectTest() {
 
-        apiRequestBuilder.endpoint("/projects/{projectId}/iterations/{number}")
-                .pathParam("projectId", "2504481")
-                .pathParam("number", "1");
+        apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_ITERATION_NUMBERS))
+                .pathParam(PathParam.PROJECT_ID, createdProject.getId())
+                .pathParam(PathParam.NUMBER, "1");
 
         ApiResponse apiResponse = ApiManager.execute(apiRequestBuilder.build());
         Iteration iteration = apiResponse.getBody(Iteration.class);
 
-        Assert.assertEquals(apiResponse.getStatusCode(), 200);
+        Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
         Assert.assertEquals(iteration.getNumber(), 1);
     }
 

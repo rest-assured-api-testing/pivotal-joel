@@ -6,4 +6,6 @@ public class PathParam {
     public static final String TASK_ID = "taskId";
     public static final String STORY_ID = "storyId";
     public static final String COMMENT_ID = "commentId";
+    public static final String NUMBER = "number";
+    public static final String MEMBER_ID = "memberId";
 }
