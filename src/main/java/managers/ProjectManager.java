@@ -16,11 +16,11 @@ import static configuration.EnvVariablesPool.dotenv;
 public class ProjectManager {
 
     /**
-     * Creates a project in a pivotal-tracker account.
+     * Creates a project with any name in a pivotal-tracker account.
      */
-    public static Project create() throws JsonProcessingException {
+    public static Project create(String name) throws JsonProcessingException {
         Project project = new Project();
-        project.setName("Test Project 1");
+        project.setName(name);
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))
@@ -29,6 +29,13 @@ public class ProjectManager {
                 .body(new ObjectMapper().writeValueAsString(project));
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder1.build());
         return apiResponse.getBody(Project.class);
+    }
+
+    /**
+     * Creates a project with a same name in a pivotal-tracker account.
+     */
+    public static Project create() throws JsonProcessingException {
+        return create("Test Project 1");
     }
 
     /**
@@ -44,4 +51,5 @@ public class ProjectManager {
 
         ApiManager.execute(apiRequestBuilder1.build());
     }
+
 }

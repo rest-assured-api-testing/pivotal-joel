@@ -7,6 +7,7 @@ import api.ApiResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import entities.Project;
+import entities.WorkSpace;
 import io.cucumber.java.After;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
@@ -19,10 +20,10 @@ import org.testng.Assert;
 
 import static configuration.EnvVariablesPool.dotenv;
 
-public class ApiProjectSteps {
-    private ApiRequest apiRequest1 = new ApiRequest();
-    private ApiResponse apiResponse1;
-    Project project1 = new Project();
+public class WorkspaceSteps {
+    private ApiRequest apiRequest5 = new ApiRequest();
+    private ApiResponse apiResponse5;
+    WorkSpace workspace = new WorkSpace();
 
     private String userToken = dotenv.get(Endpoints.TOKEN);
     private String baseUri = dotenv.get(Endpoints.BASE_URL);
@@ -34,30 +35,29 @@ public class ApiProjectSteps {
         ApiRequest apiRequest = new ApiRequest();
         apiRequest.setBaseUri(baseUri);
         apiRequest.addHeader("X-TrackerToken", userToken);
-        apiRequest.setEndpoint(dotenv.get(Endpoints.PROJECTS));
+        apiRequest.setEndpoint(dotenv.get(Endpoints.WORKSPACES));
         apiRequest.setMethod(ApiMethod.valueOf("POST"));
         apiRequest.setBody(new ObjectMapper().writeValueAsString(projectTemp));
-        project1 = ApiManager.executeWithBody(apiRequest).getBody(Project.class);
+        workspace = ApiManager.executeWithBody(apiRequest).getBody(WorkSpace.class);
     }
 
-    @Given("I build {string} request")
-    public void iBuildRequest(String method) throws JsonProcessingException {
-        apiRequest1.setBaseUri(baseUri);
-        apiRequest1.addHeader("X-TrackerToken", userToken);
-        apiRequest1.setMethod(ApiMethod.valueOf(method));
+    @Given("I build workspace request")
+    public void iBuildWorkspaceRequest() {
+        apiRequest5.setBaseUri(baseUri);
+        apiRequest5.addHeader("X-TrackerToken", userToken);
+        apiRequest5.setMethod(ApiMethod.GET);
     }
 
-    @When("I execute {string} request")
-    public void iExecuteRequest(String endpoint) {
-        apiRequest1.setEndpoint(endpoint);
-        apiRequest1.addPathParam("projectId", project1.getId().toString());
-        apiResponse1 = ApiManager.execute(apiRequest1);
+    @When("I add to workspace request {string}")
+    public void iAddToWorkspaceRequest(String endpoint) {
+        apiRequest5.setEndpoint(endpoint);
+        apiRequest5.addPathParam("workspaceId", workspace.getId().toString());
+        apiResponse5 = ApiManager.execute(apiRequest5);
     }
 
-    @Then("the response status code should be {string}")
-    public void theResponseStatusCodeShouldBe(String arg0) {
-        Assert.assertEquals(apiResponse1.getStatusCode(), HttpStatus.SC_OK);
-        apiResponse1.getResponse().then().log().body();
+    @Then("the response status code should be {string} to workspace request")
+    public void theResponseStatusCodeShouldBeToWorkspaceRequest(String status) {
+        Assert.assertEquals(apiResponse5.getStatusCode(), Integer.parseInt(status));
     }
 
     @After
@@ -65,9 +65,9 @@ public class ApiProjectSteps {
         ApiRequest apiRequest = new ApiRequest();
         apiRequest.setBaseUri(baseUri);
         apiRequest.addHeader("X-TrackerToken", userToken);
-        apiRequest.setEndpoint(dotenv.get(Endpoints.PROJECT));
+        apiRequest.setEndpoint(dotenv.get(Endpoints.WORKSPACE));
         apiRequest.setMethod(ApiMethod.valueOf("DELETE"));
-        apiRequest.addPathParam(PathParam.PROJECT_ID, project1.getId().toString());
+        apiRequest.addPathParam(PathParam.WORKSPACE_ID, workspace.getId().toString());
         ApiResponse response = ApiManager.execute(apiRequest);
         response.getResponse().then().log().status();
         response.getResponse().then().log().body();
