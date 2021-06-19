@@ -11,7 +11,6 @@ import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
 import java.util.ArrayList;
 
 import static configuration.EnvVariablesPool.dotenv;
@@ -120,7 +119,6 @@ public class WorkSpacesTest {
                 .pathParam(PathParam.WORKSPACE_ID, createdWorkspace.getId());
 
         ApiResponse apiResponse = ApiManager.executeWithBody(apiRequestBuilder.build());
-        apiResponse.getResponse().then().log().body();
         WorkSpace newWorkspace = apiResponse.getBody(WorkSpace.class);
 
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);

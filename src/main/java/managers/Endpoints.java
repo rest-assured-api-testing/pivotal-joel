@@ -7,6 +7,10 @@ public class Endpoints {
      */
     public static final String TOKEN = "TOKEN";
     /**
+     * Constant that refers environment variable name of base url in .env.develop file.
+     */
+    public static final String BASE_URL = "BASE_URL";
+    /**
      * Constant that refers environment variable name of story task endpoint in .env.develop file.
      */
     public static final String STORY_TASKS = "ENDPOINT_STORY_TASKS";
