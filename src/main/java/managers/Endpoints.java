@@ -21,4 +21,8 @@ public class Endpoints {
     public static final String PROJECT_ITERATION_NUMBERS = "ENDPOINT_PROJECT_ITERATION_NUMBERS";
     public static final String PROJECT_MEMBERSHIPS = "ENDPOINT_PROJECT_MEMBERSHIPS";
     public static final String PROJECT_MEMBERSHIP = "ENDPOINT_PROJECT_MEMBERSHIP";
+    public static final String PROJECT_LABELS = "ENDPOINT_PROJECT_LABELS";
+    public static final String PROJECT_LABEL = "ENDPOINT_PROJECT_LABEL";
+    public static final String PROJECT_WEBHOOKS = "ENDPOINT_PROJECT_WEBHOOKS";
+    public static final String PROJECT_WEBHOOK = "ENDPOINT_PROJECT_WEBHOOK";
 }
