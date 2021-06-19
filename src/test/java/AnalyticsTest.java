@@ -12,6 +12,9 @@ import org.testng.annotations.Test;
 
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * Tests analytics endpoint of a pivotal-tracker account.
+ */
 public class AnalyticsTest {
     ApiRequestBuilder apiRequestBuilder;
 
@@ -28,7 +31,9 @@ public class AnalyticsTest {
         apiRequestBuilder.method(ApiMethod.GET);
     }
 
-
+    /**
+     * Tests that iteration analytics endpoint gives us all iteration analytics.
+     */
     @Test(groups = "getRequest")
     public void getAnalyticsOfAIterationsOfAProjectTest() {
 
@@ -43,6 +48,9 @@ public class AnalyticsTest {
         Assert.assertEquals(analytics.getKind(), "analytics");
     }
 
+    /**
+     * Tests that iteration analytics cycle endpoint gives us all iteration analytics cycle.
+     */
     @Test(groups = "getRequest")
     public void getAnalyticsWithDetailsOfAIterationsOfAProjectTest() {
         apiRequestBuilder.endpoint("/projects/{projectId}/iterations/{number}/analytics/cycle_time_details")

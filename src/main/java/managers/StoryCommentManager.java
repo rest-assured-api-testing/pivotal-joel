@@ -10,9 +10,15 @@ import entities.StoryComment;
 
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * helps to manage the creation and deletion of story comment.
+ */
 public class StoryCommentManager {
 
-    public static StoryComment createStoryComment(String idProject, String idStory) throws JsonProcessingException {
+    /**
+     * Creates a story comment in a pivotal-tracker account.
+     */
+    public static StoryComment create(String idProject, String idStory) throws JsonProcessingException {
         StoryComment storyComment = new StoryComment();
         storyComment.setText("A comment 12-S7");
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
@@ -27,7 +33,10 @@ public class StoryCommentManager {
         return apiResponse.getBody(StoryComment.class);
     }
 
-    public static void deleteStoryComment(String idProject, String idStory, String idComment) {
+    /**
+     * Creates a story comment in a pivotal-tracker account.
+     */
+    public static void delete(String idProject, String idStory, String idComment) {
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))

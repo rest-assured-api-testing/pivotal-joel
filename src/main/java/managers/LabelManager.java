@@ -10,8 +10,15 @@ import entities.Label;
 
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * helps to manage the creation and deletion of label.
+ */
 public class LabelManager {
-    public static Label createStory(String idProject) throws JsonProcessingException {
+
+    /**
+     * Creates a label in a pivotal-tracker account.
+     */
+    public static Label create(String idProject) throws JsonProcessingException {
         Label label = new Label();
         label.setName("Story 7-P1");
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
@@ -25,7 +32,10 @@ public class LabelManager {
         return apiResponse.getBody(Label.class);
     }
 
-    public static void deleteStory(String idProject, String idLabel) {
+    /**
+     * Deletes a label in a pivotal-tracker account.
+     */
+    public static void delete(String idProject, String idLabel) {
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))

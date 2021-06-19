@@ -11,9 +11,15 @@ import entities.ProjectMembership;
 
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * helps to manage the creation and deletion of membership.
+ */
 public class MembershipManager {
 
-    public static Membership createStoryTask(String idProject) throws JsonProcessingException {
+    /**
+     * Creates a membership in a pivotal-tracker account.
+     */
+    public static Membership create(String idProject) throws JsonProcessingException {
         ProjectMembership projectMembership = new ProjectMembership();
         projectMembership.setEmail("marek15@sith.mil");
         projectMembership.setRole("member");
@@ -28,7 +34,10 @@ public class MembershipManager {
         return apiResponse.getBody(Membership.class);
     }
 
-    public static void deleteStoryTask(String idProject, String idMember) {
+    /**
+     * Deletes a membership in a pivotal-tracker account.
+     */
+    public static void delete(String idProject, String idMember) {
         ApiRequestBuilder apiRequestBuilder = new ApiRequestBuilder();
         apiRequestBuilder.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))

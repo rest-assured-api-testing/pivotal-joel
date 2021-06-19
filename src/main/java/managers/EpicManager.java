@@ -10,9 +10,15 @@ import entities.Epic;
 
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * helps to manage the creation and deletion of epic.
+ */
 public class EpicManager {
 
-    public static Epic createEpic(String idProject) throws JsonProcessingException {
+    /**
+     * Creates a epic in a pivotal-tracker account.
+     */
+    public static Epic create(String idProject) throws JsonProcessingException {
         Epic epic = new Epic();
         epic.setName("Epic 12-S7");
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
@@ -26,7 +32,10 @@ public class EpicManager {
         return apiResponse.getBody(Epic.class);
     }
 
-    public static void deleteEpic(String idProject, String idEpic) {
+    /**
+     * Deletes a epic in a pivotal-tracker account.
+     */
+    public static void delete(String idProject, String idEpic) {
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))

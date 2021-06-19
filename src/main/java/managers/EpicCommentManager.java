@@ -10,8 +10,15 @@ import entities.EpicComment;
 
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * helps to manage the creation and deletion of epic comment.
+ */
 public class EpicCommentManager {
-    public static EpicComment createEpicComment(String idProject, String idEpic) throws JsonProcessingException {
+
+    /**
+     * Creates a epic comment in a pivotal-tracker account.
+     */
+    public static EpicComment create(String idProject, String idEpic) throws JsonProcessingException {
         EpicComment epicComment = new EpicComment();
         epicComment.setText("A comment 12-S7");
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
@@ -26,7 +33,10 @@ public class EpicCommentManager {
         return apiResponse.getBody(EpicComment.class);
     }
 
-    public static void deleteEpicComment(String idProject, String idEpic, String idComment) {
+    /**
+     * Deletes a epic comment in a pivotal-tracker account.
+     */
+    public static void delete(String idProject, String idEpic, String idComment) {
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))

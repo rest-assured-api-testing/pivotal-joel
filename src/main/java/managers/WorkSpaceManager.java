@@ -10,7 +10,14 @@ import entities.WorkSpace;
 
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * helps to manage the creation and deletion of workspace.
+ */
 public class WorkSpaceManager {
+
+    /**
+     * Creates a workspace in a pivotal-tracker account.
+     */
     public static WorkSpace create() throws JsonProcessingException {
         WorkSpace workspace = new WorkSpace();
         workspace.setName("Test WorkSpace 1");
@@ -24,6 +31,9 @@ public class WorkSpaceManager {
         return apiResponse.getBody(WorkSpace.class);
     }
 
+    /**
+     * Deletes a workspace in a pivotal-tracker account.
+     */
     public static void delete(String idProject) {
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))

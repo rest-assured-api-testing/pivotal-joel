@@ -13,6 +13,9 @@ import org.testng.annotations.*;
 
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * Tests epic endpoint of a pivotal-tracker account.
+ */
 public class EpicsTest {
     ApiRequestBuilder apiRequestBuilder;
     Project createdProject;
@@ -29,7 +32,7 @@ public class EpicsTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.GET);
         createdProject = ProjectManager.create();
-        createdEpic = EpicManager.createEpic(createdProject.getId().toString());
+        createdEpic = EpicManager.create(createdProject.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = {"postRequest","postBadRequest"})
@@ -44,7 +47,7 @@ public class EpicsTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.PUT);
         createdProject = ProjectManager.create();
-        createdEpic = EpicManager.createEpic(createdProject.getId().toString());
+        createdEpic = EpicManager.create(createdProject.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = "deleteRequest")
@@ -52,7 +55,7 @@ public class EpicsTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.DELETE);
         createdProject = ProjectManager.create();
-        createdEpic = EpicManager.createEpic(createdProject.getId().toString());
+        createdEpic = EpicManager.create(createdProject.getId().toString());
     }
 
     @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest", "deleteBadRequest",
@@ -61,6 +64,9 @@ public class EpicsTest {
         ProjectManager.delete(createdProject.getId().toString());
     }
 
+    /**
+     * Tests that project epic endpoint gives us all project epics.
+     */
     @Test(groups = "getRequest")
     public void getAllEpicsOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPICS))
@@ -71,6 +77,9 @@ public class EpicsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 
+    /**
+     * Tests that project epic endpoint gives us a specific project epic.
+     */
     @Test(groups = "getRequest")
     public void getAnEpicOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPIC))
@@ -85,6 +94,9 @@ public class EpicsTest {
         Assert.assertEquals(epic.getKind(), "epic");
     }
 
+    /**
+     * Tests that project epic endpoint creates a project epic.
+     */
     @Test(groups = "postRequest")
     public void createAnEpicToAProjectTest() throws JsonProcessingException {
         Epic epic = new Epic();
@@ -100,6 +112,9 @@ public class EpicsTest {
         Assert.assertEquals(createdEpic.getName(), "Epic 4-P1");
     }
 
+    /**
+     * Tests that project epic endpoint updates a specific project epic.
+     */
     @Test(groups = "putRequest")
     public void updateAnEpicToAProjectTest() throws JsonProcessingException {
         Epic epic = new Epic();
@@ -116,6 +131,9 @@ public class EpicsTest {
         Assert.assertEquals(createdEpic.getName(), "Epic 5-P1");
     }
 
+    /**
+     * Tests that project epic endpoint deletes a specific project epic.
+     */
     @Test(groups = "deleteRequest")
     public void deleteAnEpicToAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPIC))
@@ -127,6 +145,10 @@ public class EpicsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
     }
 
+    /**
+     * Tests that epic endpoint gives us a bad request status to respond to a getting request
+     * without epic id.
+     */
     @Test(groups = "getRequest")
     public void getAnEpicTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC))
@@ -140,6 +162,10 @@ public class EpicsTest {
         Assert.assertEquals(epic.getKind(), "epic");
     }
 
+    /**
+     * Tests that project epic endpoint gives us a not found status to respond a wrong url of getting
+     * all project epics.
+     */
     @Test(groups = "getRequest")
     public void doNotGetAllEpicsOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPICS))
@@ -150,6 +176,10 @@ public class EpicsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that project epic endpoint gives us a bad request status to respond to a getting request
+     * without project epic id.
+     */
     @Test(groups = "getRequest")
     public void doNotGetAnEpicOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPIC))
@@ -161,6 +191,10 @@ public class EpicsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
     }
 
+    /**
+     * Tests that project epic endpoint gives us a bad request status to respond to a creating request
+     * without project epic body.
+     */
     @Test(groups = "postBadRequest")
     public void doNotCreateAnEpicToAProjectTest() throws JsonProcessingException {
         Epic epic = new Epic();
@@ -173,6 +207,10 @@ public class EpicsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
     }
 
+    /**
+     * Tests that project epic endpoint gives us a not found status to respond to a updating request
+     * without a specific project epic id.
+     */
     @Test(groups = "putRequest")
     public void doNotUpdateAnEpicToAProjectTest() throws JsonProcessingException {
         Epic epic = new Epic();
@@ -187,6 +225,10 @@ public class EpicsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that project epic endpoint gives us a not found status to respond to a deleting request
+     * without a specific project epic id.
+     */
     @Test(groups = {"deleteRequest", "deleteBadRequest"})
     public void doNotDeleteAnEpicToAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_EPIC))
@@ -198,6 +240,10 @@ public class EpicsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that epic endpoint gives us a bad request status to respond to a getting request
+     * without epic id.
+     */
     @Test(groups = "getRequest")
     public void doNotGetAnEpicTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC))

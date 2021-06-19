@@ -10,8 +10,15 @@ import entities.Webhook;
 
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * helps to manage the creation and deletion of webhook.
+ */
 public class WebhookManager {
-    public static Webhook createStory(String idProject) throws JsonProcessingException {
+
+    /**
+     * Creates a webhook in a pivotal-tracker account.
+     */
+    public static Webhook create(String idProject) throws JsonProcessingException {
         Webhook webhook = new Webhook();
         webhook.setEnabled(true);
         webhook.setWebhook_url("https://pastebin2.com/fred");
@@ -26,7 +33,10 @@ public class WebhookManager {
         return apiResponse.getBody(Webhook.class);
     }
 
-    public static void deleteStory(String idProject, String idWebhook) {
+    /**
+     * Deletes a webhook in a pivotal-tracker account.
+     */
+    public static void delete(String idProject, String idWebhook) {
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))

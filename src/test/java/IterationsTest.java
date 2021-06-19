@@ -18,6 +18,9 @@ import org.testng.annotations.Test;
 
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * Tests iteration endpoint of a pivotal-tracker account.
+ */
 public class IterationsTest {
     ApiRequestBuilder apiRequestBuilder;
     Project createdProject;
@@ -46,6 +49,9 @@ public class IterationsTest {
         ProjectManager.delete(createdProject.getId().toString());
     }
 
+    /**
+     * Tests that iteration endpoint gives us all iterations.
+     */
     @Test(groups = "getRequest")
     public void getAllIterationsOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_ITERATIONS))
@@ -58,6 +64,9 @@ public class IterationsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 
+    /**
+     * Tests that project iteration endpoint gives us a specific project iteration.
+     */
     @Test(groups = "getRequest")
     public void getAIterationsOfAProjectTest() {
 
@@ -72,6 +81,9 @@ public class IterationsTest {
         Assert.assertEquals(iteration.getNumber(), 1);
     }
 
+    /**
+     * Tests that project iteration endpoint updates a specific project iteration.
+     */
     @Test(groups = "putRequest")
     public void updateAIterationOverrideOfAProjectTest() throws JsonProcessingException {
         IterationOverride iterationOverrideToSend = new IterationOverride();

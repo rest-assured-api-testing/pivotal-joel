@@ -14,6 +14,9 @@ import org.testng.annotations.*;
 
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * Tests story task endpoint of a pivotal-tracker account.
+ */
 public class StoryTasksTest {
     ApiRequestBuilder apiRequestBuilder;
     Project createdProject;
@@ -31,8 +34,8 @@ public class StoryTasksTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.GET);
         createdProject = ProjectManager.create();
-        createdStory = StoryManager.createStory(createdProject.getId().toString());
-        createdStoryTask = StoryTaskManager.createStoryTask(createdProject.getId().toString(),
+        createdStory = StoryManager.create(createdProject.getId().toString());
+        createdStoryTask = StoryTaskManager.create(createdProject.getId().toString(),
                 createdStory.getId().toString());
     }
 
@@ -41,7 +44,7 @@ public class StoryTasksTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.POST);
         createdProject = ProjectManager.create();
-        createdStory = StoryManager.createStory(createdProject.getId().toString());
+        createdStory = StoryManager.create(createdProject.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = "putRequest")
@@ -49,8 +52,8 @@ public class StoryTasksTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.PUT);
         createdProject = ProjectManager.create();
-        createdStory = StoryManager.createStory(createdProject.getId().toString());
-        createdStoryTask = StoryTaskManager.createStoryTask(createdProject.getId().toString(),
+        createdStory = StoryManager.create(createdProject.getId().toString());
+        createdStoryTask = StoryTaskManager.create(createdProject.getId().toString(),
                 createdStory.getId().toString());
     }
 
@@ -59,8 +62,8 @@ public class StoryTasksTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.DELETE);
         createdProject = ProjectManager.create();
-        createdStory = StoryManager.createStory(createdProject.getId().toString());
-        createdStoryTask = StoryTaskManager.createStoryTask(createdProject.getId().toString(),
+        createdStory = StoryManager.create(createdProject.getId().toString());
+        createdStoryTask = StoryTaskManager.create(createdProject.getId().toString(),
                 createdStory.getId().toString());
     }
 
@@ -70,6 +73,9 @@ public class StoryTasksTest {
         ProjectManager.delete(createdProject.getId().toString());
     }
 
+    /**
+     * Tests that story task endpoint gives us all story tasks.
+     */
     @Test(groups = "getRequest")
     public void getAllStoryTasksOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_TASKS))
@@ -81,6 +87,9 @@ public class StoryTasksTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 
+    /**
+     * Tests that story task endpoint gives us a specific story task.
+     */
     @Test(groups = "getRequest")
     public void getAStoryTaskOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_TASK))
@@ -96,6 +105,9 @@ public class StoryTasksTest {
         Assert.assertEquals(storyTask.getKind(), "task");
     }
 
+    /**
+     * Tests that story task endpoint creates a story task.
+     */
     @Test(groups = "postRequest")
     public void createAStoryTaskToAProjectTest() throws JsonProcessingException {
         StoryTask storyTask = new StoryTask();
@@ -112,6 +124,9 @@ public class StoryTasksTest {
         Assert.assertEquals(createdStoryTask.getDescription(), "Story 4-P1");
     }
 
+    /**
+     * Tests that story task endpoint updates a specific story task.
+     */
     @Test(groups = "putRequest")
     public void updateAStoryTaskOfAProjectTest() throws JsonProcessingException {
         StoryTask storyTask = new StoryTask();
@@ -129,6 +144,9 @@ public class StoryTasksTest {
         Assert.assertEquals(createdStoryTask.getDescription(), "Story 5-P1");
     }
 
+    /**
+     * Tests that story task endpoint deletes a specific story task.
+     */
     @Test(groups = "deleteRequest")
     public void deleteAStoryTaskOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_TASK))
@@ -141,6 +159,9 @@ public class StoryTasksTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
     }
 
+    /**
+     * Tests that story task endpoint gives us a not found status to respond a wrong url of getting all story tasks.
+     */
     @Test(groups = "getRequest")
     public void doNotGetAllStoryTasksOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_TASKS))
@@ -152,6 +173,10 @@ public class StoryTasksTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that story task endpoint gives us a not found status to respond to a getting request without
+     * story task id.
+     */
     @Test(groups = "getRequest")
     public void doNotGetAStoryTaskOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_TASK))
@@ -164,6 +189,10 @@ public class StoryTasksTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that story task endpoint gives us a bad request status to respond to a creating request without
+     * story task body.
+     */
     @Test(groups = "postBadRequest")
     public void doNotCreateAStoryTaskToAProjectTest() throws JsonProcessingException {
         StoryTask storyTask = new StoryTask();
@@ -177,6 +206,10 @@ public class StoryTasksTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
     }
 
+    /**
+     * Tests that story task endpoint gives us a not found status to respond to a updating request without
+     * a specific story task id.
+     */
     @Test(groups = "putRequest")
     public void doNotUpdateAStoryTaskOfAProjectTest() throws JsonProcessingException {
         StoryTask storyTask = new StoryTask();
@@ -192,6 +225,10 @@ public class StoryTasksTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that story task endpoint gives us a not found status to respond to a deleting request without
+     * a specific story task id.
+     */
     @Test(groups = {"deleteRequest", "deleteBadRequest"})
     public void doNotDeleteAStoryTaskOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_TASK))

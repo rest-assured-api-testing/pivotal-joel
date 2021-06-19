@@ -16,6 +16,9 @@ import java.util.ArrayList;
 
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * Tests workspace endpoint of a pivotal-tracker account.
+ */
 public class WorkSpacesTest {
     ApiRequestBuilder apiRequestBuilder;
     WorkSpace createdWorkspace;
@@ -58,7 +61,9 @@ public class WorkSpacesTest {
         WorkSpaceManager.delete(createdWorkspace.getId().toString());
     }
 
-
+    /**
+     * Tests that workspace endpoint gives us all workspaces.
+     */
     @Test(groups = "getRequest")
     public void getAllWorkspacesTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.WORKSPACES));
@@ -68,6 +73,9 @@ public class WorkSpacesTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 
+    /**
+     * Tests that workspace endpoint gives us a specific workspace.
+     */
     @Test(groups = "getRequest")
     public void getAWorkspaceTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.WORKSPACE))
@@ -82,6 +90,9 @@ public class WorkSpacesTest {
         Assert.assertEquals(workSpace.getName(), createdWorkspace.getName());
     }
 
+    /**
+     * Tests that workspace endpoint creates a workspace.
+     */
     @Test(groups = "postRequest")
     public void createAWorkspaceTest() throws JsonProcessingException {
         WorkSpace workspace = new WorkSpace();
@@ -97,6 +108,9 @@ public class WorkSpacesTest {
         Assert.assertEquals(createdWorkspace.getName(), "Test WorkSpace 2");
     }
 
+    /**
+     * Tests that workspace endpoint updates a specific workspace.
+     */
     @Test(groups = "putRequest")
     public void updateAWorkspaceTest() throws JsonProcessingException {
         WorkSpace workspace = new WorkSpace();
@@ -113,6 +127,9 @@ public class WorkSpacesTest {
         Assert.assertEquals(newWorkspace.getName(), createdWorkspace.getName());
     }
 
+    /**
+     * Tests that workspace endpoint deletes a specific workspace.
+     */
     @Test(groups = "deleteRequest")
     public void deleteAWorkspaceTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.WORKSPACE))
@@ -124,6 +141,9 @@ public class WorkSpacesTest {
 
     }
 
+    /**
+     * Tests that workspace endpoint gives us a not found status to respond a wrong url of getting all workspaces.
+     */
     @Test(groups = "getRequest")
     public void doNotGetAllWorkspacesTest() {
         apiRequestBuilder.endpoint("/my/workspace");
@@ -133,6 +153,10 @@ public class WorkSpacesTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that workspace endpoint gives us a not found status to respond to a getting request without
+     * workspace id.
+     */
     @Test(groups = "getRequest")
     public void doNotGetAWorkspaceWithBadUrlTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.WORKSPACE))
@@ -143,6 +167,10 @@ public class WorkSpacesTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that workspace endpoint gives us a bad request status to respond to a creating request without
+     * workspace body.
+     */
     @Test(groups = "postBadRequest")
     public void doNotCreateAWorkspaceTest() throws JsonProcessingException {
         WorkSpace workspace = new WorkSpace();
@@ -154,6 +182,10 @@ public class WorkSpacesTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
     }
 
+    /**
+     * Tests that workspace endpoint gives us a not found status to respond to a updating request without
+     * a specific workspace id.
+     */
     @Test(groups = "putRequest")
     public void doNotUpdateAWorkspaceTest() throws JsonProcessingException {
         WorkSpace workspace = new WorkSpace();
@@ -167,6 +199,10 @@ public class WorkSpacesTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that workspace endpoint gives us a not found status to respond to a deleting request without
+     * a specific workspace id.
+     */
     @Test(groups = {"deleteRequest", "deleteBadRequest"})
     public void doNotDeleteAWorkspaceTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.WORKSPACE))

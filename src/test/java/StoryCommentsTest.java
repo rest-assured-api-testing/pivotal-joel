@@ -13,6 +13,9 @@ import org.testng.Assert;
 import org.testng.annotations.*;
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * Tests story comment endpoint of a pivotal-tracker account.
+ */
 public class StoryCommentsTest {
     ApiRequestBuilder apiRequestBuilder;
     Project createdProject;
@@ -31,8 +34,8 @@ public class StoryCommentsTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.GET);
         createdProject = ProjectManager.create();
-        createdStory = StoryManager.createStory(createdProject.getId().toString());
-        createdStoryComment = StoryCommentManager.createStoryComment(createdProject.getId().toString(),
+        createdStory = StoryManager.create(createdProject.getId().toString());
+        createdStoryComment = StoryCommentManager.create(createdProject.getId().toString(),
                 createdStory.getId().toString());
     }
 
@@ -41,7 +44,7 @@ public class StoryCommentsTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.POST);
         createdProject = ProjectManager.create();
-        createdStory = StoryManager.createStory(createdProject.getId().toString());
+        createdStory = StoryManager.create(createdProject.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = "putRequest")
@@ -49,8 +52,8 @@ public class StoryCommentsTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.PUT);
         createdProject = ProjectManager.create();
-        createdStory = StoryManager.createStory(createdProject.getId().toString());
-        createdStoryComment = StoryCommentManager.createStoryComment(createdProject.getId().toString(),
+        createdStory = StoryManager.create(createdProject.getId().toString());
+        createdStoryComment = StoryCommentManager.create(createdProject.getId().toString(),
                 createdStory.getId().toString());
     }
 
@@ -59,8 +62,8 @@ public class StoryCommentsTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.DELETE);
         createdProject = ProjectManager.create();
-        createdStory = StoryManager.createStory(createdProject.getId().toString());
-        createdStoryComment = StoryCommentManager.createStoryComment(createdProject.getId().toString(),
+        createdStory = StoryManager.create(createdProject.getId().toString());
+        createdStoryComment = StoryCommentManager.create(createdProject.getId().toString(),
                 createdStory.getId().toString());
     }
 
@@ -70,6 +73,9 @@ public class StoryCommentsTest {
         ProjectManager.delete(createdProject.getId().toString());
     }
 
+    /**
+     * Tests that story comment endpoint gives us all story comments.
+     */
     @Test(groups = "getRequest")
     public void getAllCommentsOfAStoryTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_COMMENTS))
@@ -81,6 +87,9 @@ public class StoryCommentsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 
+    /**
+     * Tests that story comment endpoint gives us a specific story comment.
+     */
     @Test(groups = "getRequest")
     public void getACommentOfAStoryTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_COMMENT))
@@ -96,6 +105,9 @@ public class StoryCommentsTest {
         Assert.assertEquals(storyComment.getKind(), "comment");
     }
 
+    /**
+     * Tests that story comment endpoint creates a story comment.
+     */
     @Test(groups = "postRequest")
     public void createACommentOfAStoryTest() throws JsonProcessingException {
         StoryComment storyComment = new StoryComment();
@@ -112,6 +124,9 @@ public class StoryCommentsTest {
         Assert.assertEquals(createdStoryComment.getText(), "Comment 4-P1");
     }
 
+    /**
+     * Tests that story comment endpoint updates a specific story comment.
+     */
     @Test(groups = "putRequest")
     public void updateACommentOfAStoryTest() throws JsonProcessingException {
         StoryComment storyComment = new StoryComment();
@@ -129,6 +144,9 @@ public class StoryCommentsTest {
         Assert.assertEquals(createdStoryComment.getText(), "Comment 5-P1");
     }
 
+    /**
+     * Tests that story comment endpoint deletes a specific story comment.
+     */
     @Test(groups = "deleteRequest")
     public void deleteACommentOfAStoryTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_COMMENT))
@@ -141,6 +159,10 @@ public class StoryCommentsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
     }
 
+    /**
+     * Tests that story comment endpoint gives us a not found status to respond a wrong url of getting
+     * all story comments.
+     */
     @Test(groups = "getRequest")
     public void doNotGetAllCommentsOfAStoryTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_COMMENTS))
@@ -152,6 +174,10 @@ public class StoryCommentsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that story comment endpoint gives us a not found status to respond to a getting request without
+     * story comment id.
+     */
     @Test(groups = "getRequest")
     public void doNotGetACommentOfAStoryTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_COMMENT))
@@ -164,6 +190,10 @@ public class StoryCommentsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that story comment endpoint gives us a bad request status to respond to a creating request
+     * without story comment body.
+     */
     @Test(groups = "postBadRequest")
     public void doNotCreateACommentOfAStoryTest() throws JsonProcessingException {
         StoryComment storyComment = new StoryComment();
@@ -177,6 +207,10 @@ public class StoryCommentsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
     }
 
+    /**
+     * Tests that story story comment endpoint gives us a not found status to respond to a updating
+     * request without a specific story story comment id.
+     */
     @Test(groups = "putRequest")
     public void doNotUpdateACommentOfAStoryTest() throws JsonProcessingException {
         StoryComment storyComment = new StoryComment();
@@ -192,6 +226,10 @@ public class StoryCommentsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that story comment endpoint gives us a not found status to respond to a deleting request
+     * without a specific story comment id.
+     */
     @Test(groups = {"deleteRequest", "deleteBadRequest"})
     public void doNotDeleteACommentOfAStoryTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY_COMMENT))

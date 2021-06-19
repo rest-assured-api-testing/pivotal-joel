@@ -7,6 +7,9 @@ import org.testng.annotations.Test;
 
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * Tests account endpoint of a pivotal-tracker account.
+ */
 public class AccountsTest {
     ApiRequestBuilder apiRequestBuilder;
 
@@ -31,6 +34,9 @@ public class AccountsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 
+    /**
+     * Tests that account endpoint gives us a specific account.
+     */
     @Test(groups = "getRequest")
     public void getAAccountTest() {
         apiRequestBuilder.endpoint("/accounts/{accountId}")
@@ -45,6 +51,9 @@ public class AccountsTest {
 
     }
 
+    /**
+     * Tests that account endpoint gives us all accounts.
+     */
     @Test(groups = "getRequest")
     public void getAllAccountsTest() {
         apiRequestBuilder.endpoint("/accounts");

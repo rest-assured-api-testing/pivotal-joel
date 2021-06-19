@@ -15,6 +15,9 @@ import org.testng.annotations.Test;
 
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * Tests label endpoint of a pivotal-tracker account.
+ */
 public class LabelsTest {
     ApiRequestBuilder apiRequestBuilder;
     Project createdProject;
@@ -31,7 +34,7 @@ public class LabelsTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.GET);
         createdProject = ProjectManager.create();
-        createdLabel = LabelManager.createStory(createdProject.getId().toString());
+        createdLabel = LabelManager.create(createdProject.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = {"postRequest", "postBadRequest"})
@@ -46,7 +49,7 @@ public class LabelsTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.PUT);
         createdProject = ProjectManager.create();
-        createdLabel = LabelManager.createStory(createdProject.getId().toString());
+        createdLabel = LabelManager.create(createdProject.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = "deleteRequest")
@@ -54,7 +57,7 @@ public class LabelsTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.DELETE);
         createdProject = ProjectManager.create();
-        createdLabel = LabelManager.createStory(createdProject.getId().toString());
+        createdLabel = LabelManager.create(createdProject.getId().toString());
     }
 
     @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest", "deleteBadRequest",
@@ -63,6 +66,9 @@ public class LabelsTest {
         ProjectManager.delete(createdProject.getId().toString());
     }
 
+    /**
+     * Tests that label endpoint gives us all labels.
+     */
     @Test(groups = "getRequest")
     public void getAllLabelsOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_LABELS))
@@ -73,6 +79,9 @@ public class LabelsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 
+    /**
+     * Tests that label endpoint gives us a specific label.
+     */
     @Test(groups = "getRequest")
     public void getALabelOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_LABEL))
@@ -86,6 +95,9 @@ public class LabelsTest {
         Assert.assertEquals(label.getKind(), "label");
     }
 
+    /**
+     * Tests that label endpoint creates a label.
+     */
     @Test(groups= "postRequest")
     public void createALabelToAProjectTest() throws JsonProcessingException {
         Label label = new Label();
@@ -101,6 +113,9 @@ public class LabelsTest {
         Assert.assertEquals(createdLabel.getName(), "label 4-p1");
     }
 
+    /**
+     * Tests that label endpoint updates a specific label.
+     */
     @Test(groups = "putRequest")
     public void updateALabelOfAProjectTest() throws JsonProcessingException {
         Label label = new Label();
@@ -117,6 +132,9 @@ public class LabelsTest {
         Assert.assertEquals(createdLabel.getName(), "label 5-p1");
     }
 
+    /**
+     * Tests that label endpoint deletes a specific label.
+     */
     @Test(groups = "deleteRequest")
     public void deleteALabelOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_LABEL))
@@ -128,6 +146,10 @@ public class LabelsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
     }
 
+    /**
+     * Tests that label endpoint gives us a not found status to respond a wrong url of getting
+     * all labels.
+     */
     @Test(groups = "getRequest")
     public void doNotGetAllLabelsOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_LABELS))
@@ -138,6 +160,10 @@ public class LabelsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that label endpoint gives us a not found status to respond to a getting request
+     * without label id.
+     */
     @Test(groups = "getRequest")
     public void doNotGetALabelOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_LABEL))
@@ -149,6 +175,10 @@ public class LabelsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that label endpoint gives us a bad request status to respond to a creating request
+     * without label body.
+     */
     @Test(groups = "postBadRequest")
     public void doNotCreateALabelToAProjectTest() throws JsonProcessingException {
         Label label = new Label();
@@ -161,6 +191,10 @@ public class LabelsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
     }
 
+    /**
+     * Tests that label endpoint gives us a not found status to respond to a updating request
+     * without a specific label id.
+     */
     @Test(groups = "putRequest")
     public void doNotUpdateALabelOfAProjectTest() throws JsonProcessingException {
         Label label = new Label();
@@ -175,6 +209,10 @@ public class LabelsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that label endpoint gives us a not found status to respond to a deleting request
+     * without a specific label id.
+     */
     @Test(groups = {"deleteRequest", "deleteBadRequest"})
     public void doNotDeleteALabelOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_LABEL))

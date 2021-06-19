@@ -8,6 +8,9 @@ import org.testng.annotations.Test;
 
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * Tests notification endpoint of a pivotal-tracker account.
+ */
 public class NotificationsTest {
     ApiRequestBuilder apiRequestBuilder;
 
@@ -24,6 +27,9 @@ public class NotificationsTest {
         apiRequestBuilder.method(ApiMethod.GET);
     }
 
+    /**
+     * Tests that notification endpoint gives us all notifications.
+     */
     @Test(groups = "getRequest")
     public void getNotificationsTest() {
         apiRequestBuilder.endpoint("/my/notifications")

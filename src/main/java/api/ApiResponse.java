@@ -6,6 +6,9 @@ import java.util.List;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
+/**
+ * Wrappers a Response entity.
+ */
 public class ApiResponse {
     private Response response;
     public ApiResponse(Response response) {

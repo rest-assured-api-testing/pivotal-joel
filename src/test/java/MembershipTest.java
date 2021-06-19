@@ -19,6 +19,9 @@ import org.testng.annotations.Test;
 
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * Tests membership endpoint of a pivotal-tracker account.
+ */
 public class MembershipTest {
     ApiRequestBuilder apiRequestBuilder;
     Project createdProject;
@@ -35,7 +38,7 @@ public class MembershipTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.GET);
         createdProject = ProjectManager.create();
-        createdMembership = MembershipManager.createStoryTask(createdProject.getId().toString());
+        createdMembership = MembershipManager.create(createdProject.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = "postRequest")
@@ -51,7 +54,7 @@ public class MembershipTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.PUT);
         createdProject = ProjectManager.create();
-        createdMembership = MembershipManager.createStoryTask(createdProject.getId().toString());
+        createdMembership = MembershipManager.create(createdProject.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = "deleteRequest")
@@ -59,7 +62,7 @@ public class MembershipTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.DELETE);
         createdProject = ProjectManager.create();
-        createdMembership = MembershipManager.createStoryTask(createdProject.getId().toString());
+        createdMembership = MembershipManager.create(createdProject.getId().toString());
     }
 
     @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest", "deleteRequest"})
@@ -67,6 +70,9 @@ public class MembershipTest {
         ProjectManager.delete(createdProject.getId().toString());
     }
 
+    /**
+     * Tests that membership endpoint gives us all memberships.
+     */
     @Test(groups = "getRequest")
     public void getAllMembersOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_MEMBERSHIPS))
@@ -78,6 +84,9 @@ public class MembershipTest {
         apiResponse.getResponse().then().log().body();
     }
 
+    /**
+     * Tests that membership endpoint gives us a specific membership.
+     */
     @Test(groups = "getRequest")
     public void getAMemberTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_MEMBERSHIP))
@@ -91,6 +100,9 @@ public class MembershipTest {
         Assert.assertEquals(membership.getKind(), "project_membership");
     }
 
+    /**
+     * Tests that membership endpoint creates a membership.
+     */
     @Test(groups = "postRequest")
     public void addAMemberToAProjectTest() throws JsonProcessingException {
         ProjectMembership projectMembership = new ProjectMembership();
@@ -106,6 +118,9 @@ public class MembershipTest {
         apiResponse.getResponse().then().log().body();
     }
 
+    /**
+     * Tests that membership endpoint updates a specific membership.
+     */
     @Test(groups = "putRequest")
     public void updateAMemberOfAProjectTest() throws JsonProcessingException {
         ProjectMembership projectMembership = new ProjectMembership();
@@ -121,6 +136,9 @@ public class MembershipTest {
         apiResponse.getResponse().then().log().body();
     }
 
+    /**
+     * Tests that membership endpoint deletes a specific membership.
+     */
     @Test(groups = "deleteRequest")
     public void deleteAMemberOfAProject() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_MEMBERSHIP))
@@ -132,6 +150,10 @@ public class MembershipTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
     }
 
+    /**
+     * Tests that membership endpoint gives us a not found status to respond a wrong url of getting
+     * all memberships.
+     */
     @Test(groups = "getRequest")
     public void doNotGetAllMembersOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_MEMBERSHIPS))
@@ -142,6 +164,10 @@ public class MembershipTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that membership endpoint gives us a not found status to respond to a getting request
+     * without membership id.
+     */
     @Test(groups = "getRequest")
     public void doNotGetAMemberTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_MEMBERSHIP))
@@ -153,6 +179,10 @@ public class MembershipTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that membership endpoint gives us a bad request status to respond to a creating request
+     * without membership body.
+     */
     @Test(groups = "postRequest")
     public void doNotAddAMemberToAProjectTest() throws JsonProcessingException {
         ProjectMembership projectMembership = new ProjectMembership();
@@ -165,6 +195,10 @@ public class MembershipTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
     }
 
+    /**
+     * Tests that membership endpoint gives us a not found status to respond to a updating request
+     * without a specific membership id.
+     */
     @Test(groups = "putRequest")
     public void doNotUpdateAMemberOfAProjectTest() throws JsonProcessingException {
         ProjectMembership projectMembership = new ProjectMembership();
@@ -179,6 +213,10 @@ public class MembershipTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that membership endpoint gives us a not found status to respond to a deleting request
+     * without a specific membership id.
+     */
     @Test(groups = "deleteRequest")
     public void doNotDeleteAMemberOfAProject() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_MEMBERSHIP))

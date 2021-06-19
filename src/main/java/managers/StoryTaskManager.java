@@ -10,9 +10,15 @@ import entities.StoryTask;
 
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * helps to manage the creation and deletion of story task.
+ */
 public class StoryTaskManager {
 
-    public static StoryTask createStoryTask(String idProject, String idStory) throws JsonProcessingException {
+    /**
+     * Creates a story task in a pivotal-tracker account.
+     */
+    public static StoryTask create(String idProject, String idStory) throws JsonProcessingException {
         StoryTask storyTask = new StoryTask();
         storyTask.setDescription("Task 1-S7");
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
@@ -27,7 +33,10 @@ public class StoryTaskManager {
         return apiResponse.getBody(StoryTask.class);
     }
 
-    public static void deleteStoryTask(String idProject, String idStory, String idStoryTask) {
+    /**
+     * Deletes a story task in a pivotal-tracker account.
+     */
+    public static void delete(String idProject, String idStory, String idStoryTask) {
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))
                 .baseUri(dotenv.get("BASE_URL"))

@@ -1,5 +1,8 @@
 package api;
 
+/**
+ * Helps to build an ApiRequest entity.
+ */
 public class ApiRequestBuilder implements IBuilder {
     ApiRequest apiRequest = new ApiRequest();
 

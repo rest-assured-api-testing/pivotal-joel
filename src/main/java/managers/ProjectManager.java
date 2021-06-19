@@ -10,7 +10,14 @@ import entities.Project;
 
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * helps to manage the creation and deletion of project.
+ */
 public class ProjectManager {
+
+    /**
+     * Creates a project in a pivotal-tracker account.
+     */
     public static Project create() throws JsonProcessingException {
         Project project = new Project();
         project.setName("Test Project 1");
@@ -24,6 +31,9 @@ public class ProjectManager {
         return apiResponse.getBody(Project.class);
     }
 
+    /**
+     * Deletes a project in a pivotal-tracker account.
+     */
     public static void delete(String idProject) {
         ApiRequestBuilder apiRequestBuilder1 = new ApiRequestBuilder();
         apiRequestBuilder1.header("X-TrackerToken", dotenv.get("TOKEN"))

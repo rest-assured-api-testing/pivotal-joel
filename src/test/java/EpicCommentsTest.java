@@ -12,6 +12,9 @@ import org.testng.annotations.*;
 
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * Tests epic comment endpoint of a pivotal-tracker account.
+ */
 public class EpicCommentsTest {
     ApiRequestBuilder apiRequestBuilder;
     Project createdProject;
@@ -29,8 +32,8 @@ public class EpicCommentsTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.GET);
         createdProject = ProjectManager.create();
-        createdEpic = EpicManager.createEpic(createdProject.getId().toString());
-        createdEpicComment = EpicCommentManager.createEpicComment(createdProject.getId().toString(),
+        createdEpic = EpicManager.create(createdProject.getId().toString());
+        createdEpicComment = EpicCommentManager.create(createdProject.getId().toString(),
                 createdEpic.getId().toString());
     }
 
@@ -39,7 +42,7 @@ public class EpicCommentsTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.POST);
         createdProject = ProjectManager.create();
-        createdEpic = EpicManager.createEpic(createdProject.getId().toString());
+        createdEpic = EpicManager.create(createdProject.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = "putRequest")
@@ -47,8 +50,8 @@ public class EpicCommentsTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.PUT);
         createdProject = ProjectManager.create();
-        createdEpic = EpicManager.createEpic(createdProject.getId().toString());
-        createdEpicComment = EpicCommentManager.createEpicComment(createdProject.getId().toString(),
+        createdEpic = EpicManager.create(createdProject.getId().toString());
+        createdEpicComment = EpicCommentManager.create(createdProject.getId().toString(),
                 createdEpic.getId().toString());
     }
 
@@ -57,8 +60,8 @@ public class EpicCommentsTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.DELETE);
         createdProject = ProjectManager.create();
-        createdEpic = EpicManager.createEpic(createdProject.getId().toString());
-        createdEpicComment = EpicCommentManager.createEpicComment(createdProject.getId().toString(),
+        createdEpic = EpicManager.create(createdProject.getId().toString());
+        createdEpicComment = EpicCommentManager.create(createdProject.getId().toString(),
                 createdEpic.getId().toString());
     }
 
@@ -68,6 +71,9 @@ public class EpicCommentsTest {
         ProjectManager.delete(createdProject.getId().toString());
     }
 
+    /**
+     * Tests that epic comment endpoint gives us all epic comments.
+     */
     @Test(groups = "getRequest")
     public void getAllCommentsOfAnEpicTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC_COMMENTS))
@@ -79,6 +85,9 @@ public class EpicCommentsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 
+    /**
+     * Tests that epic comment endpoint gives us a specific epic comment.
+     */
     @Test(groups = "getRequest")
     public void getACommentOfAnEpicTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC_COMMENT))
@@ -94,6 +103,9 @@ public class EpicCommentsTest {
         Assert.assertEquals(storyComment.getKind(), "comment");
     }
 
+    /**
+     * Tests that epic comment endpoint creates a epic comment.
+     */
     @Test(groups = "postRequest")
     public void createACommentOfAnEpicTest() throws JsonProcessingException {
         StoryComment storyComment = new StoryComment();
@@ -110,6 +122,9 @@ public class EpicCommentsTest {
         Assert.assertEquals(createdEpicComment.getText(), "Comment 4-P1");
     }
 
+    /**
+     * Tests that epic comment endpoint updates a specific epic comment.
+     */
     @Test(groups = "putRequest")
     public void updateACommentOfAnEpicTest() throws JsonProcessingException {
         StoryComment storyComment = new StoryComment();
@@ -127,6 +142,9 @@ public class EpicCommentsTest {
         Assert.assertEquals(createdStoryComment.getText(), "Comment 5-P1");
     }
 
+    /**
+     * Tests that epic comment endpoint deletes a specific epic comment.
+     */
     @Test(groups = "deleteRequest")
     public void deleteACommentOfAnEpicTest() throws JsonProcessingException {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC_COMMENT))
@@ -139,6 +157,10 @@ public class EpicCommentsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
     }
 
+    /**
+     * Tests that epic comment endpoint gives us a not found status to respond a wrong url of
+     * getting all epic comments.
+     */
     @Test(groups = "getRequest")
     public void doNotGetAllCommentsOfAnEpicTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC_COMMENTS))
@@ -150,6 +172,10 @@ public class EpicCommentsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that epic comment endpoint gives us a not found status to respond to a getting request
+     * without epic comment id.
+     */
     @Test(groups = "getRequest")
     public void doNotGetACommentOfAnEpicTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC_COMMENT))
@@ -162,6 +188,10 @@ public class EpicCommentsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that epic comment endpoint gives us a bad request status to respond to a creating request
+     * without epic comment body.
+     */
     @Test(groups = "postBadRequest")
     public void doNotCreateACommentOfAnEpicTest() throws JsonProcessingException {
         StoryComment storyComment = new StoryComment();
@@ -175,6 +205,10 @@ public class EpicCommentsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
     }
 
+    /**
+     * Tests that epic comment endpoint gives us a not found status to respond to a updating request
+     * without a specific epic comment id.
+     */
     @Test(groups = "putRequest")
     public void doNotUpdateACommentOfAnEpicTest() throws JsonProcessingException {
         StoryComment storyComment = new StoryComment();
@@ -190,6 +224,10 @@ public class EpicCommentsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that epic comment endpoint gives us a not found status to respond to a deleting request
+     * without a specific epic comment id.
+     */
     @Test(groups = "deleteRequest")
     public void doNotDeleteACommentOfAnEpicTest() throws JsonProcessingException {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.EPIC_COMMENT))

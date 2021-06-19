@@ -12,6 +12,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * Tests project endpoint of a pivotal-tracker account.
+ */
 public class ProjectsTest {
     ApiRequestBuilder apiRequestBuilder;
     Project createdProject;
@@ -54,7 +57,9 @@ public class ProjectsTest {
         ProjectManager.delete(createdProject.getId().toString());
     }
 
-
+    /**
+     * Tests that project endpoint gives us all projects.
+     */
     @Test(groups = "getRequest")
     public void getAllProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECTS));
@@ -64,6 +69,9 @@ public class ProjectsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 
+    /**
+     * Tests that project endpoint gives us a specific project.
+     */
     @Test(groups = "getRequest")
     public void getAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT))
@@ -80,6 +88,9 @@ public class ProjectsTest {
         apiResponse.validateBodySchema("schemas/project.json");
     }
 
+    /**
+     * Tests that project people endpoint give us project people information.
+     */
     @Test(groups = "getRequest")
     public void getPeopleInProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PEOPLE))
@@ -90,6 +101,9 @@ public class ProjectsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 
+    /**
+     * Tests that project endpoint creates a project.
+     */
     @Test(groups = "postRequest")
     public void createAProjectTest() throws JsonProcessingException {
         Project projectToSend = new Project();
@@ -107,6 +121,9 @@ public class ProjectsTest {
         apiResponse.validateBodySchema("schemas/project.json");
     }
 
+    /**
+     * Tests that project endpoint updates a specific project.
+     */
     @Test(groups = "putRequest")
     public void updateAProjectTest() throws JsonProcessingException {
         Project projectToSend = new Project();
@@ -123,6 +140,9 @@ public class ProjectsTest {
         Assert.assertEquals(project.getName(), nameToUpdate);
     }
 
+    /**
+     * Tests that project endpoint deletes a specific project.
+     */
     @Test(groups = "deleteRequest")
     public void deleteAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT))
@@ -134,6 +154,9 @@ public class ProjectsTest {
 
     }
 
+    /**
+     * Tests that project endpoint gives us a not found status to respond a wrong url of getting all projects.
+     */
     @Test(groups = "getRequest")
     public void doNotGetAllProjectTest() {
         apiRequestBuilder.endpoint("/project");
@@ -143,6 +166,10 @@ public class ProjectsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that project endpoint gives us a not found status to respond to a getting request without
+     * project id.
+     */
     @Test(groups = "getRequest")
     public void doNotGetAProjectWithBadUrlTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT))
@@ -153,6 +180,10 @@ public class ProjectsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that project endpoint gives us a not found status to respond to a getting request with
+     * a project id that does not exist.
+     */
     @Test(groups = "getRequest")
     public void doNotGetAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT))
@@ -163,6 +194,10 @@ public class ProjectsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_FORBIDDEN);
     }
 
+    /**
+     * Tests that project endpoint gives us a bad request status to respond to a creating request without
+     * project body.
+     */
     @Test(groups = "postBadRequest")
     public void doNotCreateAProjectTest() throws JsonProcessingException {
         Project projectToSend = new Project();
@@ -174,6 +209,10 @@ public class ProjectsTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
     }
 
+    /**
+     * Tests that project endpoint gives us a not found status to respond to a updating request without
+     * a specific project id.
+     */
     @Test(groups = "putRequest")
     public void doNotUpdateAProjectTest() throws JsonProcessingException {
         Project projectToSend = new Project();
@@ -187,7 +226,10 @@ public class ProjectsTest {
 
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
-
+    /**
+     * Tests that project endpoint gives us a not found status to respond to a deleting request without
+     * a specific project id.
+     */
     @Test(groups = {"deleteRequest", "deleteBadRequest"})
     public void doNotDeleteAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT))

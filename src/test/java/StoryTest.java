@@ -15,6 +15,9 @@ import org.testng.annotations.Test;
 
 import static configuration.EnvVariablesPool.dotenv;
 
+/**
+ * Tests story endpoint of a pivotal-tracker account.
+ */
 public class StoryTest {
     ApiRequestBuilder apiRequestBuilder;
     Project createdProject;
@@ -31,7 +34,7 @@ public class StoryTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.GET);
         createdProject = ProjectManager.create();
-        createdStory = StoryManager.createStory(createdProject.getId().toString());
+        createdStory = StoryManager.create(createdProject.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = {"postRequest", "postBadRequest"})
@@ -46,7 +49,7 @@ public class StoryTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.PUT);
         createdProject = ProjectManager.create();
-        createdStory = StoryManager.createStory(createdProject.getId().toString());
+        createdStory = StoryManager.create(createdProject.getId().toString());
     }
 
     @BeforeMethod(onlyForGroups = "deleteRequest")
@@ -54,7 +57,7 @@ public class StoryTest {
         createBasicRequest();
         apiRequestBuilder.method(ApiMethod.DELETE);
         createdProject = ProjectManager.create();
-        createdStory = StoryManager.createStory(createdProject.getId().toString());
+        createdStory = StoryManager.create(createdProject.getId().toString());
     }
 
     @AfterMethod(onlyForGroups = {"getRequest", "postRequest", "putRequest", "deleteBadRequest",
@@ -63,6 +66,9 @@ public class StoryTest {
         ProjectManager.delete(createdProject.getId().toString());
     }
 
+    /**
+     * Tests that project story endpoint gives us all stories.
+     */
     @Test(groups = "getRequest")
     public void getAllStoriesOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_STORIES))
@@ -73,6 +79,9 @@ public class StoryTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_OK);
     }
 
+    /**
+     * Tests that project story endpoint gives us a specific story.
+     */
     @Test(groups = "getRequest")
     public void getAStoryOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_STORY))
@@ -86,6 +95,9 @@ public class StoryTest {
         Assert.assertEquals(story.getKind(), "story");
     }
 
+    /**
+     * Tests that project story endpoint creates a story.
+     */
     @Test(groups = "postRequest")
     public void createAStoryToAProjectTest() throws JsonProcessingException {
         Story story = new Story();
@@ -101,6 +113,9 @@ public class StoryTest {
         Assert.assertEquals(createdStory.getName(), "Story 4-P1");
     }
 
+    /**
+     * Tests that project story endpoint updates a specific story.
+     */
     @Test(groups = "putRequest")
     public void updateAStoryOfAProjectTest() throws JsonProcessingException {
         Story story = new Story();
@@ -117,6 +132,9 @@ public class StoryTest {
         Assert.assertEquals(createdStory.getName(), "Story 5-P1");
     }
 
+    /**
+     * Tests that project story endpoint deletes a specific story.
+     */
     @Test(groups = "deleteRequest")
     public void deleteAStoryOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_STORY))
@@ -128,6 +146,9 @@ public class StoryTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
     }
 
+    /**
+     * Tests that story endpoint gives us a specific story.
+     */
     @Test(groups = "getRequest")
     public void getAStoryTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY))
@@ -140,6 +161,9 @@ public class StoryTest {
         Assert.assertEquals(story.getKind(), "story");
     }
 
+    /**
+     * Tests that story endpoint updates a specific story.
+     */
     @Test(groups = "putRequest")
     public void updateAStoryTest() throws JsonProcessingException {
         Story story = new Story();
@@ -155,6 +179,9 @@ public class StoryTest {
         Assert.assertEquals(createdStory.getName(), "Story 6-P1");
     }
 
+    /**
+     * Tests that story endpoint deletes a specific story.
+     */
     @Test(groups = "deleteRequest")
     public void deleteAStoryTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY))
@@ -165,6 +192,9 @@ public class StoryTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NO_CONTENT);
     }
 
+    /**
+     * Tests that project story endpoint gives us a not found status to respond a wrong url of getting all stories.
+     */
     @Test(groups = "getRequest")
     public void doNotGetAllStoriesOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_STORIES))
@@ -175,6 +205,10 @@ public class StoryTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that project story endpoint gives us a bad request status to respond to a getting request without
+     * story id.
+     */
     @Test(groups = "getRequest")
     public void doNotGetAStoryOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_STORY))
@@ -186,6 +220,10 @@ public class StoryTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
     }
 
+    /**
+     * Tests that project story endpoint gives us a bad request status to respond to a creating request without
+     * story body.
+     */
     @Test(groups = "postBadRequest")
     public void doNotCreateAStoryToAProjectTest() throws JsonProcessingException {
         Story story = new Story();
@@ -198,6 +236,10 @@ public class StoryTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
     }
 
+    /**
+     * Tests that project story endpoint gives us a not found status to respond to a updating request without
+     * a specific story id.
+     */
     @Test(groups = "putRequest")
     public void doNotUpdateAStoryOfAProjectTest2() throws JsonProcessingException {
         Story story = new Story();
@@ -212,6 +254,10 @@ public class StoryTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that project story endpoint gives us a not found status to respond to a deleting request without
+     * a specific story id.
+     */
     @Test(groups = {"deleteRequest", "deleteBadRequest"})
     public void doNotDeleteAStoryOfAProjectTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.PROJECT_STORY))
@@ -223,6 +269,10 @@ public class StoryTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that story endpoint gives us a not found status to respond to a getting request without
+     * story id.
+     */
     @Test(groups = "getRequest")
     public void doNotGetAStoryTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY))
@@ -233,6 +283,10 @@ public class StoryTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that story endpoint gives us a not found status to respond to a updating request without
+     * a specific story id.
+     */
     @Test(groups = "putRequest")
     public void doNotUpdateAStoryTest() throws JsonProcessingException {
         Story story = new Story();
@@ -246,6 +300,10 @@ public class StoryTest {
         Assert.assertEquals(apiResponse.getStatusCode(), HttpStatus.SC_NOT_FOUND);
     }
 
+    /**
+     * Tests that story endpoint gives us a not found status to respond to a deleting request without
+     * a specific story id.
+     */
     @Test(groups = {"deleteRequest", "deleteBadRequest"})
     public void doNotDeleteAStoryTest() {
         apiRequestBuilder.endpoint(dotenv.get(Endpoints.STORY))
